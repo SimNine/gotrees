@@ -1,1 +1,3 @@
-go build -o dist/
+cd ./src/
+go build -o ../dist/
+cd ..

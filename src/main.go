@@ -3,49 +3,45 @@ package main
 import (
 	"log"
 
+	"urffer.xyz/gotrees/src/util"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-type Dims Pos
-type Pos struct {
-	x int
-	y int
-}
-
 type Game struct {
-	wordsPos    Pos
+	wordsPos    util.Pos
 	xIncreasing bool
 	yIncreasing bool
 
-	windowSize Dims
+	windowSize util.Dims
 }
 
 func (g *Game) Init() {
 	ebiten.SetWindowTitle("Hello, World!")
-	ebiten.SetWindowSize(g.windowSize.x, g.windowSize.y)
+	ebiten.SetWindowSize(g.windowSize.X, g.windowSize.Y)
 }
 
 func (g *Game) Update() error {
 	if g.xIncreasing {
-		g.wordsPos.x += 1
+		g.wordsPos.X += 1
 	} else {
-		g.wordsPos.x -= 1
+		g.wordsPos.X -= 1
 	}
 	if g.yIncreasing {
-		g.wordsPos.y += 1
+		g.wordsPos.Y += 1
 	} else {
-		g.wordsPos.y -= 1
+		g.wordsPos.Y -= 1
 	}
 
-	if g.wordsPos.x > g.windowSize.x {
+	if g.wordsPos.X > g.windowSize.X {
 		g.xIncreasing = false
-	} else if g.wordsPos.x <= 0 {
+	} else if g.wordsPos.X <= 0 {
 		g.xIncreasing = true
 	}
-	if g.wordsPos.y > g.windowSize.y {
+	if g.wordsPos.Y > g.windowSize.Y {
 		g.yIncreasing = false
-	} else if g.wordsPos.y <= 0 {
+	} else if g.wordsPos.Y <= 0 {
 		g.yIncreasing = true
 	}
 
@@ -53,7 +49,7 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrintAt(screen, "ayoooo", g.wordsPos.x, g.wordsPos.y)
+	ebitenutil.DebugPrintAt(screen, "ayoooo", g.wordsPos.X, g.wordsPos.Y)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -63,10 +59,10 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 func main() {
 
 	game := &Game{
-		wordsPos:    Pos{0, 0},
+		wordsPos:    util.Pos{X: 0, Y: 0},
 		xIncreasing: true,
 		yIncreasing: true,
-		windowSize:  Dims{320, 240},
+		windowSize:  util.Dims{X: 320, Y: 240},
 	}
 	game.Init()
 	if err := ebiten.RunGame(game); err != nil {
