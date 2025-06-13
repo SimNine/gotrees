@@ -1,12 +1,15 @@
 services:
     gotrees-dev:
         container_name: gotrees_dev
-        image: mcr.microsoft.com/devcontainers/go
+        build:
+            context: ../
+            dockerfile: ./Dockerfile
         volumes:
             - ..:/workspaces/gotrees:cached
             - /dev:/dev:rw
+            - ${HOME}/.Xauthority:/home/vscode/.Xauthority:rw
         environment:
-            XAUTHORITY: /tmp/.Xauthority
+            DISPLAY: ${DISPLAY}
         network_mode: "host"
         privileged: true
         cap_add:
