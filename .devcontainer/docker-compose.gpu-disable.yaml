@@ -1,0 +1,4 @@
+services:
+  gotrees-dev:
+    environment:
+      - HAS_GPU=disable

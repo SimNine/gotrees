@@ -1,0 +1,28 @@
+services:
+    gotrees-dev:
+        container_name: gotrees_dev
+        image: mcr.microsoft.com/devcontainers/go
+        volumes:
+            - ..:/workspaces/gotrees:cached
+            - /dev:/dev:rw
+        environment:
+            XAUTHORITY: /tmp/.Xauthority
+        network_mode: "host"
+        privileged: true
+        cap_add:
+            - SYS_ADMIN
+            # Allows container process to change process priority
+            - SYS_NICE
+            # [Optional] Required for ptrace-based debuggers like C++, Go, and Rust
+            - SYS_PTRACE
+        security_opt:
+            - seccomp:unconfined
+        ulimits:
+            rtprio: 99
+        command: ""
+        entrypoint: /bin/bash -c "sleep inf"
+        group_add:
+            - dialout
+            - plugdev
+            - video
+            - audio
