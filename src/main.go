@@ -3,14 +3,14 @@ package main
 import (
 	"log"
 
-	"urffer.xyz/gotrees/src/util"
+	"github.com/SimNine/go-solitaire/src/util"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Game struct {
-	wordsPos    util.Pos
+	wordsPos    util.Pos[int]
 	xIncreasing bool
 	yIncreasing bool
 
@@ -59,7 +59,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 func main() {
 
 	game := &Game{
-		wordsPos:    util.Pos{X: 0, Y: 0},
+		wordsPos:    util.Pos[int]{X: 0, Y: 0},
 		xIncreasing: true,
 		yIncreasing: true,
 		windowSize:  util.Dims{X: 320, Y: 240},

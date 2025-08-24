@@ -1,9 +1,9 @@
 package environment
 
-import "urffer.xyz/gotrees/src/util"
+import "github.com/SimNine/go-solitaire/src/util"
 
 type Particle struct {
-	pos        util.Pos
+	pos        util.Pos[int]
 	power      int
 	isConsumed bool
 }

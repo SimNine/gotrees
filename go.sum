@@ -1,3 +1,5 @@
+github.com/SimNine/go-solitaire v0.0.0-20250823194004-8d0a29001cd6 h1:mTtVIGjaIf3ciJHSz1Ywq7Sf12DEbenueKGB2JsD640=
+github.com/SimNine/go-solitaire v0.0.0-20250823194004-8d0a29001cd6/go.mod h1:kN6HWAcepu/pncieSer369RODetAt2+lGgN1tsAFs4A=
 github.com/ebitengine/gomobile v0.0.0-20240911145611-4856209ac325 h1:Gk1XUEttOk0/hb6Tq3WkmutWa0ZLhNn/6fc6XZpM7tM=
 github.com/ebitengine/gomobile v0.0.0-20240911145611-4856209ac325/go.mod h1:ulhSQcbPioQrallSuIzF8l1NKQoD7xmMZc5NxzibUMY=
 github.com/ebitengine/hideconsole v1.0.0 h1:5J4U0kXF+pv/DhiXt5/lTz0eO5ogJ1iXb8Yj1yReDqE=

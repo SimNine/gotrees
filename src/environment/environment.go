@@ -1,6 +1,6 @@
 package environment
 
-import "urffer.xyz/gotrees/src/util"
+import "github.com/SimNine/go-solitaire/src/util"
 
 type Environment struct {
 	dims util.Dims
