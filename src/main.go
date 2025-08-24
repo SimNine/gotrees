@@ -4,17 +4,18 @@ import (
 	"log"
 
 	"github.com/SimNine/go-solitaire/src/util"
+	"github.com/SimNine/gotrees/src/environment"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type Game struct {
-	wordsPos    util.Pos[int]
-	xIncreasing bool
-	yIncreasing bool
+	windowSize       util.Dims
+	windowRenderDims util.Dims
 
-	windowSize util.Dims
+	environment *environment.Environment
 }
 
 func (g *Game) Init() {
@@ -23,46 +24,34 @@ func (g *Game) Init() {
 }
 
 func (g *Game) Update() error {
-	if g.xIncreasing {
-		g.wordsPos.X += 1
-	} else {
-		g.wordsPos.X -= 1
-	}
-	if g.yIncreasing {
-		g.wordsPos.Y += 1
-	} else {
-		g.wordsPos.Y -= 1
-	}
+	// Update the game board with any non-interactive logic
+	g.environment.Update()
 
-	if g.wordsPos.X > g.windowSize.X {
-		g.xIncreasing = false
-	} else if g.wordsPos.X <= 0 {
-		g.xIncreasing = true
-	}
-	if g.wordsPos.Y > g.windowSize.Y {
-		g.yIncreasing = false
-	} else if g.wordsPos.Y <= 0 {
-		g.yIncreasing = true
+	// Handle mouse input
+	pos := util.MakePosFromTuple(ebiten.CursorPosition())
+	g.environment.SetCursorPos(pos)
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		g.environment.MouseDown()
+	} else if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		g.environment.MouseUp()
 	}
 
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrintAt(screen, "ayoooo", g.wordsPos.X, g.wordsPos.Y)
+	ebitenutil.DebugPrintAt(screen, "ayoooo", 0, 0)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+	return g.windowRenderDims.X, g.windowRenderDims.Y
 }
 
 func main() {
-
 	game := &Game{
-		wordsPos:    util.Pos[int]{X: 0, Y: 0},
-		xIncreasing: true,
-		yIncreasing: true,
-		windowSize:  util.Dims{X: 320, Y: 240},
+		windowSize:       util.Dims{X: 640, Y: 480},
+		windowRenderDims: util.Dims{X: 640, Y: 480},
+		environment:      &environment.Environment{},
 	}
 	game.Init()
 	if err := ebiten.RunGame(game); err != nil {
