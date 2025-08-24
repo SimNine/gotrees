@@ -1,6 +1,9 @@
 package genetree
 
-import "github.com/SimNine/go-solitaire/src/util"
+import (
+	"github.com/SimNine/go-solitaire/src/util"
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type TreeNode struct {
 	nodeType NodeType
@@ -10,4 +13,13 @@ type TreeNode struct {
 	pos      util.Pos[int] // position of the top-left corner
 
 	activated bool // whether this node has been used, or is vestigial
+}
+
+func (n *TreeNode) Draw(screen *ebiten.Image) {
+	// TODO
+}
+
+func (n *TreeNode) IsPointInBounds(pos util.Pos[int]) bool {
+	// TODO
+	return false
 }

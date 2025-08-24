@@ -4,10 +4,9 @@ import (
 	"log"
 
 	"github.com/SimNine/go-solitaire/src/util"
-	"github.com/SimNine/gotrees/src/environment"
+	"github.com/SimNine/gotrees/src/simulation"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -15,7 +14,7 @@ type Game struct {
 	windowSize       util.Dims
 	windowRenderDims util.Dims
 
-	environment *environment.Environment
+	simulation *simulation.Simulation
 }
 
 func (g *Game) Init() {
@@ -25,22 +24,22 @@ func (g *Game) Init() {
 
 func (g *Game) Update() error {
 	// Update the game board with any non-interactive logic
-	g.environment.Update()
+	g.simulation.Update()
 
 	// Handle mouse input
 	pos := util.MakePosFromTuple(ebiten.CursorPosition())
-	g.environment.SetCursorPos(pos)
+	g.simulation.SetCursorPos(pos)
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		g.environment.MouseDown()
+		g.simulation.MouseDown()
 	} else if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-		g.environment.MouseUp()
+		g.simulation.MouseUp()
 	}
 
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrintAt(screen, "ayoooo", 0, 0)
+	g.simulation.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -48,10 +47,13 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func main() {
+	allDims := util.Dims{X: 640, Y: 480}
 	game := &Game{
-		windowSize:       util.Dims{X: 640, Y: 480},
-		windowRenderDims: util.Dims{X: 640, Y: 480},
-		environment:      &environment.Environment{},
+		windowSize:       allDims,
+		windowRenderDims: allDims,
+		simulation: simulation.NewSimulation(
+			allDims,
+		),
 	}
 	game.Init()
 	if err := ebiten.RunGame(game); err != nil {
