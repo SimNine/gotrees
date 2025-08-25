@@ -94,8 +94,12 @@ type Landscape struct {
 	groundLevels []int
 }
 
-func (l *Landscape) Draw(screen *ebiten.Image) {
+func (l *Landscape) Draw(
+	screen *ebiten.Image,
+	viewport util.Pos[int],
+) {
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(-viewport.X), float64(-viewport.Y))
 	screen.DrawImage(l.image, op)
 }
 

@@ -51,12 +51,15 @@ type Environment struct {
 	landscape *Landscape
 }
 
-func (e *Environment) Draw(screen *ebiten.Image) {
+func (e *Environment) Draw(
+	screen *ebiten.Image,
+	viewport util.Pos[int],
+) {
 	// Fill the background with blue
 	screen.Fill(COLOR_SKYBLUE)
 
 	// Draw the landscape
-	e.landscape.Draw(screen)
+	e.landscape.Draw(screen, viewport)
 
 	// Draw the trees
 	for _, tree := range e.trees {

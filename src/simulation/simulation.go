@@ -28,8 +28,11 @@ type Simulation struct {
 	env *environment.Environment
 }
 
-func (s *Simulation) Draw(screen *ebiten.Image) {
-	s.env.Draw(screen)
+func (s *Simulation) Draw(
+	screen *ebiten.Image,
+	viewport util.Pos[int],
+) {
+	s.env.Draw(screen, viewport)
 }
 
 func (s *Simulation) Update() {
