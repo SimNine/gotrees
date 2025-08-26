@@ -21,7 +21,8 @@ func NewEnvironment(
 	random *rand.Rand,
 	dims util.Dims,
 ) *Environment {
-	return &Environment{
+
+	env := &Environment{
 		random: random,
 
 		dims: dims,
@@ -34,9 +35,24 @@ func NewEnvironment(
 		landscape: NewLandscape(
 			random,
 			dims,
-			200,
+			600,
 		),
 	}
+
+	// Add some trees
+	for i := 0; i < 10; i++ {
+		xPos := random.Intn(dims.X)
+		yPos := env.landscape.groundLevels[xPos]
+		env.trees = append(
+			env.trees,
+			genetree.NewGeneTree(
+				random,
+				util.Pos[int]{X: xPos, Y: yPos},
+			),
+		)
+	}
+
+	return env
 }
 
 type Environment struct {
@@ -64,15 +80,15 @@ func (e *Environment) Draw(
 
 	// Draw the trees
 	for _, tree := range e.trees {
-		tree.Draw(screen)
+		tree.Draw(screen, viewport)
 	}
 
 	// Draw the particles
 	for _, s := range e.sun {
-		s.Draw(screen)
+		s.Draw(screen, viewport)
 	}
 	for _, r := range e.rain {
-		r.Draw(screen)
+		r.Draw(screen, viewport)
 	}
 	// for _, s := range e.seeds {
 	// 	s.Draw(screen)

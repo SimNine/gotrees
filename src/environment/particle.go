@@ -5,6 +5,7 @@ import (
 
 	"github.com/SimNine/go-solitaire/src/util"
 	"github.com/SimNine/gotrees/src/environment/genetree"
+	"github.com/SimNine/gotrees/src/localutil"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -37,8 +38,12 @@ type baseParticle struct {
 	color      color.RGBA
 }
 
-func (b *baseParticle) Draw(screen *ebiten.Image) {
-	vector.DrawFilledCircle(screen, float32(b.pos.X), float32(b.pos.Y), 2, b.color, false)
+func (b *baseParticle) Draw(
+	screen *ebiten.Image,
+	viewport localutil.Viewport,
+) {
+	screenPos := viewport.GameToScreen(b.pos)
+	vector.DrawFilledCircle(screen, float32(screenPos.X), float32(screenPos.Y), 2, b.color, false)
 
 	// TODO
 	// if (GeneTrees.debug) {

@@ -1,25 +1,28 @@
 package genetree
 
 import (
+	"math/rand"
+
 	"github.com/SimNine/go-solitaire/src/util"
+	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-func NewGeneTree() *GeneTree {
+func NewGeneTree(
+	random *rand.Rand,
+	pos util.Pos[int],
+) *GeneTree {
 	return &GeneTree{
-		// fitness:   0,
-		// nutrients: 0,
-		// energy:    0,
+		fitness:   0,
+		nutrients: 0,
+		energy:    0,
 
-		// root: TreeNode{
-		// 	nodeType:  NodeTypeRoot,
-		// 	size:      20,
-		// 	dist:      0,
-		// 	angle:     0,
-		// 	pos:       [2]int{0, 0},
-		// 	activated: true,
-		// },
-		// age: 0,
+		root: *NewTreeNodeBase(
+			TREENODE_STRUCT,
+			10,
+			pos,
+		),
+		age: 0,
 	}
 }
 
@@ -33,8 +36,11 @@ type GeneTree struct {
 	age  int
 }
 
-func (t *GeneTree) Draw(screen *ebiten.Image) {
-	// t.root.Draw(screen, t)
+func (t *GeneTree) Draw(
+	screen *ebiten.Image,
+	viewport localutil.Viewport,
+) {
+	t.root.Draw(screen, viewport)
 }
 
 func (t *GeneTree) IsPointInBounds(pos util.Pos[int]) bool {

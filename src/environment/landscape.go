@@ -119,5 +119,6 @@ func (l *Landscape) getAlgorithmicGroundLevel(x int) int {
 	for i := 0; i < l.groundDegree; i++ {
 		sum += math.Cos(l.groundFrequency[i]*float64(x)+l.groundDisplacement[i]) * l.groundAmplitude[i]
 	}
+	sum += float64(l.groundBaseline)
 	return int(sum)
 }

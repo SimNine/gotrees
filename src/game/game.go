@@ -21,7 +21,7 @@ func NewGame(dims util.Dims) *Game {
 		cursorWindowPos: util.Pos[int]{X: 0, Y: 0},
 		cursorPressed:   false,
 		simulation: simulation.NewSimulation(
-			util.Dims{X: 2000, Y: 1000},
+			util.Dims{X: 4000, Y: 2000},
 		),
 	}
 }
@@ -95,10 +95,6 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return g.windowRenderDims.X, g.windowRenderDims.Y
 }
 
-func (g *Game) windowToGamePos(pos util.Pos[int]) util.Pos[int] {
-	return pos.TranslatePos(g.viewport.Pos)
-}
-
 func (g *Game) setCursorPos(pos util.Pos[int]) {
 	g.prevCursorPos = g.cursorWindowPos
 	g.cursorWindowPos = pos
@@ -106,10 +102,10 @@ func (g *Game) setCursorPos(pos util.Pos[int]) {
 
 func (g *Game) mouseDown() {
 	g.cursorPressed = true
-	log.Println("Mouse down at game pos", g.windowToGamePos(g.cursorWindowPos))
+	log.Println("Mouse down at game pos", g.viewport.ScreenToGame(g.cursorWindowPos))
 }
 
 func (g *Game) mouseUp() {
 	g.cursorPressed = false
-	log.Println("Mouse up at game pos", g.windowToGamePos(g.cursorWindowPos))
+	log.Println("Mouse up at game pos", g.viewport.ScreenToGame(g.cursorWindowPos))
 }
