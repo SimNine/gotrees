@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/SimNine/go-solitaire/src/util"
+	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/SimNine/gotrees/src/simulation"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -13,8 +14,8 @@ import (
 type Game struct {
 	windowSize       util.Dims
 	windowRenderDims util.Dims
-	viewport         util.Pos[int] // Top-left corner of the viewport in world coordinates
 
+	viewport   localutil.Viewport
 	simulation *simulation.Simulation
 }
 
@@ -29,8 +30,8 @@ func (g *Game) Update() error {
 
 	// Get mouse position and adjust for viewport
 	pos := util.MakePosFromTuple(ebiten.CursorPosition())
-	pos.X += g.viewport.X
-	pos.Y += g.viewport.Y
+	pos.X += g.viewport.Pos.X
+	pos.Y += g.viewport.Pos.Y
 
 	// Handle mouse input
 	g.simulation.SetCursorPos(pos)
@@ -42,16 +43,16 @@ func (g *Game) Update() error {
 
 	// Handle keyboard input for viewport movement
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		g.viewport.Y -= 5
+		g.viewport.Pos.Y -= 5
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		g.viewport.Y += 5
+		g.viewport.Pos.Y += 5
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		g.viewport.X -= 5
+		g.viewport.Pos.X -= 5
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		g.viewport.X += 5
+		g.viewport.Pos.X += 5
 	}
 
 	return nil
@@ -70,7 +71,10 @@ func main() {
 	game := &Game{
 		windowSize:       allDims,
 		windowRenderDims: allDims,
-		viewport:         util.Pos[int]{X: 0, Y: 0},
+		viewport: localutil.Viewport{
+			Pos:  util.Pos[int]{X: 0, Y: 0},
+			Dims: allDims,
+		},
 		simulation: simulation.NewSimulation(
 			allDims,
 		),

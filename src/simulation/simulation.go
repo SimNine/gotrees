@@ -6,6 +6,7 @@ import (
 
 	"github.com/SimNine/go-solitaire/src/util"
 	"github.com/SimNine/gotrees/src/environment"
+	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -30,7 +31,7 @@ type Simulation struct {
 
 func (s *Simulation) Draw(
 	screen *ebiten.Image,
-	viewport util.Pos[int],
+	viewport localutil.Viewport,
 ) {
 	s.env.Draw(screen, viewport)
 }

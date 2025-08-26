@@ -6,6 +6,7 @@ import (
 
 	"github.com/SimNine/go-solitaire/src/util"
 	"github.com/SimNine/gotrees/src/environment/genetree"
+	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -53,7 +54,7 @@ type Environment struct {
 
 func (e *Environment) Draw(
 	screen *ebiten.Image,
-	viewport util.Pos[int],
+	viewport localutil.Viewport,
 ) {
 	// Fill the background with blue
 	screen.Fill(COLOR_SKYBLUE)

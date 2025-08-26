@@ -2,10 +2,12 @@ package environment
 
 import (
 	"image/color"
+	"log"
 	"math"
 	"math/rand"
 
 	"github.com/SimNine/go-solitaire/src/util"
+	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -21,6 +23,8 @@ func NewLandscape(
 	dims util.Dims,
 	baseLevel int,
 ) *Landscape {
+	log.Printf("Creating landscape with dims %v and base level %d\n", dims, baseLevel)
+
 	// Create the landscape without any details
 	tileTypes := make([][]tileType, dims.X)
 	for x := 0; x < dims.X; x++ {
@@ -96,10 +100,10 @@ type Landscape struct {
 
 func (l *Landscape) Draw(
 	screen *ebiten.Image,
-	viewport util.Pos[int],
+	viewport localutil.Viewport,
 ) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(-viewport.X), float64(-viewport.Y))
+	op.GeoM.Translate(float64(-viewport.Pos.X), float64(-viewport.Pos.Y))
 	screen.DrawImage(l.image, op)
 }
 
