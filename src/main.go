@@ -22,6 +22,7 @@ type Game struct {
 func (g *Game) Init() {
 	ebiten.SetWindowTitle("GeneTrees")
 	ebiten.SetWindowSize(g.windowSize.X, g.windowSize.Y)
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 }
 
 func (g *Game) Update() error {
@@ -55,6 +56,15 @@ func (g *Game) Update() error {
 		g.viewport.Pos.X += 5
 	}
 
+	// Check if the window size has changed
+	w, h := ebiten.WindowSize()
+	if w != g.windowSize.X || h != g.windowSize.Y {
+		g.windowSize.X = w
+		g.windowSize.Y = h
+		g.windowRenderDims = g.windowSize
+		g.viewport.Dims = g.windowRenderDims
+	}
+
 	return nil
 }
 
@@ -76,7 +86,7 @@ func main() {
 			Dims: allDims,
 		},
 		simulation: simulation.NewSimulation(
-			allDims,
+			util.Dims{X: 2000, Y: 1000},
 		),
 	}
 	game.Init()

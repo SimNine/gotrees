@@ -67,7 +67,14 @@ func NewLandscape(
 	// Create the tiles
 	for x := 0; x < len(landscape.tileType); x++ {
 		landscape.groundLevels[x] = landscape.getAlgorithmicGroundLevel(x)
-		for y := landscape.groundLevels[x]; y < dims.Y; y++ {
+		y := landscape.groundLevels[x]
+		if y < 0 {
+			y = 0
+		}
+		if y >= dims.Y {
+			continue
+		}
+		for ; y < dims.Y; y++ {
 			landscape.tileType[x][y] = tileTypeGround
 		}
 	}
