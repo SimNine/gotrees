@@ -1,0 +1,115 @@
+package game
+
+import (
+	"log"
+
+	"github.com/SimNine/go-solitaire/src/util"
+	"github.com/SimNine/gotrees/src/localutil"
+	"github.com/SimNine/gotrees/src/simulation"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+)
+
+func NewGame(dims util.Dims) *Game {
+	return &Game{
+		windowSize:       dims,
+		windowRenderDims: dims,
+		viewport: localutil.Viewport{
+			Pos:  util.Pos[int]{X: 0, Y: 0},
+			Dims: dims,
+		},
+		cursorWindowPos: util.Pos[int]{X: 0, Y: 0},
+		cursorPressed:   false,
+		simulation: simulation.NewSimulation(
+			util.Dims{X: 2000, Y: 1000},
+		),
+	}
+}
+
+type Game struct {
+	windowSize       util.Dims
+	windowRenderDims util.Dims
+
+	viewport        localutil.Viewport
+	cursorWindowPos util.Pos[int]
+	prevCursorPos   util.Pos[int]
+	cursorPressed   bool
+
+	simulation *simulation.Simulation
+}
+
+func (g *Game) Init() {
+	ebiten.SetWindowTitle("GeneTrees")
+	ebiten.SetWindowSize(g.windowSize.X, g.windowSize.Y)
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+}
+
+func (g *Game) Update() error {
+	// Update the simulation
+	g.simulation.Update()
+
+	// Handle mouse input
+	g.setCursorPos(util.MakePosFromTuple(ebiten.CursorPosition()))
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		g.mouseDown()
+	} else if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		g.mouseUp()
+	}
+
+	// Handle keyboard input for viewport movement
+	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+		g.viewport.Pos.Y -= 5
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyDown) {
+		g.viewport.Pos.Y += 5
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		g.viewport.Pos.X -= 5
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+		g.viewport.Pos.X += 5
+	}
+
+	// Move the viewport if the cursor was dragged
+	if g.cursorPressed {
+		g.viewport.Pos = g.viewport.Pos.TranslatePos(g.prevCursorPos.Sub(g.cursorWindowPos))
+	}
+
+	// Check if the window size has changed
+	w, h := ebiten.WindowSize()
+	if w != g.windowSize.X || h != g.windowSize.Y {
+		g.windowSize.X = w
+		g.windowSize.Y = h
+		g.windowRenderDims = g.windowSize
+		g.viewport.Dims = g.windowRenderDims
+	}
+
+	return nil
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	g.simulation.Draw(screen, g.viewport)
+}
+
+func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	return g.windowRenderDims.X, g.windowRenderDims.Y
+}
+
+func (g *Game) windowToGamePos(pos util.Pos[int]) util.Pos[int] {
+	return pos.TranslatePos(g.viewport.Pos)
+}
+
+func (g *Game) setCursorPos(pos util.Pos[int]) {
+	g.prevCursorPos = g.cursorWindowPos
+	g.cursorWindowPos = pos
+}
+
+func (g *Game) mouseDown() {
+	g.cursorPressed = true
+	log.Println("Mouse down at game pos", g.windowToGamePos(g.cursorWindowPos))
+}
+
+func (g *Game) mouseUp() {
+	g.cursorPressed = false
+	log.Println("Mouse up at game pos", g.windowToGamePos(g.cursorWindowPos))
+}

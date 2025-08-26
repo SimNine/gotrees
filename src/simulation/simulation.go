@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"log"
 	"math/rand"
 
 	"github.com/SimNine/go-solitaire/src/util"
@@ -24,8 +23,6 @@ func NewSimulation(dims util.Dims) *Simulation {
 type Simulation struct {
 	random *rand.Rand
 
-	cursorPos util.Pos[int]
-
 	env *environment.Environment
 }
 
@@ -37,16 +34,4 @@ func (s *Simulation) Draw(
 }
 
 func (s *Simulation) Update() {
-}
-
-func (s *Simulation) SetCursorPos(pos util.Pos[int]) {
-	s.cursorPos = pos
-}
-
-func (s *Simulation) MouseDown() {
-	log.Println("Mouse down at", s.cursorPos)
-}
-
-func (s *Simulation) MouseUp() {
-	log.Println("Mouse up at", s.cursorPos)
 }
