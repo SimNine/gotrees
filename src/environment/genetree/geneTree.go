@@ -19,7 +19,7 @@ func NewGeneTree(
 
 		root: *NewTreeNodeBase(
 			TREENODE_STRUCT,
-			10,
+			20,
 			pos,
 		),
 		age: 0,

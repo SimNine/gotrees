@@ -3,8 +3,9 @@ package localutil
 import "github.com/SimNine/go-solitaire/src/util"
 
 type Viewport struct {
-	Pos  util.Pos[int] // Top-left corner of the viewport in world coordinates
-	Dims util.Dims     // Dimensions of the viewport in pixels
+	Pos   util.Pos[int] // Top-left corner of the viewport in world coordinates
+	Dims  util.Dims     // Dimensions of the viewport in pixels
+	Debug bool
 }
 
 func (v *Viewport) ScreenToGame(pos util.Pos[int]) util.Pos[int] {

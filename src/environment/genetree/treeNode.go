@@ -1,6 +1,8 @@
 package genetree
 
 import (
+	"image/color"
+
 	"github.com/SimNine/go-solitaire/src/util"
 	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -62,6 +64,18 @@ func (n *TreeNode) Draw(
 		NODE_COLORS[n.nodeType],
 		false,
 	)
+
+	if viewport.Debug {
+		vector.DrawFilledRect(
+			screen,
+			float32(screenPos.X)-n.diameter/2,
+			float32(screenPos.Y)-n.diameter/2,
+			n.diameter,
+			n.diameter,
+			color.RGBA{R: 255, G: 0, B: 0, A: 10},
+			false,
+		)
+	}
 }
 
 func (n *TreeNode) IsPointInBounds(pos util.Pos[int]) bool {

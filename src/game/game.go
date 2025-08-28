@@ -15,8 +15,9 @@ func NewGame(dims util.Dims) *Game {
 		windowSize:       dims,
 		windowRenderDims: dims,
 		viewport: localutil.Viewport{
-			Pos:  util.Pos[int]{X: 0, Y: 0},
-			Dims: dims,
+			Pos:   util.Pos[int]{X: 0, Y: 0},
+			Dims:  dims,
+			Debug: true,
 		},
 		cursorWindowPos: util.Pos[int]{X: 0, Y: 0},
 		cursorPressed:   false,
@@ -68,6 +69,11 @@ func (g *Game) Update() error {
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
 		g.viewport.Pos.X += 5
+	}
+
+	// Toggle debug mode
+	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
+		g.viewport.Debug = !g.viewport.Debug
 	}
 
 	// Move the viewport if the cursor was dragged
