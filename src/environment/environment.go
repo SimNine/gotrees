@@ -41,7 +41,7 @@ func NewEnvironment(
 	}
 
 	// Add some trees
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 50; i++ {
 		xPos := random.Intn(dims.X)
 		yPos := env.landscape.groundLevels[xPos]
 		env.trees[genetree.NewGeneTree(
@@ -111,8 +111,8 @@ func (e *Environment) Update() {
 	// }
 	e.collideSunWithGround(e.sun)
 	e.collideRainWithGround(e.rain)
-	e.collideSunWithTrees(e.sun)
-	e.collideRainWithTrees(e.rain)
+	// e.collideSunWithTrees(e.sun)
+	// e.collideRainWithTrees(e.rain)
 
 	// // Update all trees
 	// for tree := range e.trees {

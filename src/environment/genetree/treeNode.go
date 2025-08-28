@@ -2,6 +2,7 @@ package genetree
 
 import (
 	"image/color"
+	"math"
 	"math/rand"
 
 	"github.com/SimNine/go-solitaire/src/util"
@@ -16,7 +17,7 @@ const NODE_MIN_DISTANCE = 40.0
 const NODE_MUTATE_CHANCE_TYPE = 0.15
 const NODE_MUTATE_CHANCE_DIAMETER = 0.30
 const NODE_MUTATE_CHANCE_DELETE_NODE = 0.10
-const NODE_MUTATE_CHANCE_ADD_NODE = 0.30
+const NODE_MUTATE_CHANCE_ADD_NODE = 0.25
 const NODE_MUTATE_CHANCE_ANGLE = 0.25
 const NODE_MUTATE_CHANCE_DISTANCE = 0.15
 
@@ -26,25 +27,32 @@ func NewTreeNodeBase(
 	random *rand.Rand,
 	pos util.Pos[int],
 ) *TreeNode {
-	return NewTreeNode(
+	treeNode := NewTreeNode(
 		random,
-		nil,
-		NodeType(random.Intn(len(NODE_COLORS))),
-		float32((random.Float64()*9.0)+NODE_MIN_DIAMETER),
+		map[*TreeNode]struct{}{},
+		TREENODE_STRUCT,
+		(random.Float64()*9.0)+NODE_MIN_DIAMETER,
 		0,
 		0,
 		pos,
 		true,
 	)
+
+	// Adjust the position of all child nodes
+	for child := range treeNode.children {
+		child.initPosition(pos)
+	}
+
+	return treeNode
 }
 
 func NewTreeNode(
 	random *rand.Rand,
 	children map[*TreeNode]struct{},
 	nodeType NodeType,
-	diameter float32,
-	dist float32,
-	angle float32,
+	diameter float64,
+	dist float64,
+	angle float64,
 	pos util.Pos[int],
 	mutate bool,
 ) *TreeNode {
@@ -54,7 +62,7 @@ func NewTreeNode(
 		nodeType:  nodeType,
 		diameter:  diameter,
 		dist:      dist,
-		angle:     angle,
+		angleRads: angle,
 		pos:       pos,
 		activated: true,
 	}
@@ -71,11 +79,11 @@ type TreeNode struct {
 
 	children map[*TreeNode]struct{}
 
-	nodeType NodeType
-	diameter float32       // diameter
-	dist     float32       // distance from parent node
-	angle    float32       // angle (clockwise) from directly below parent (in radians)
-	pos      util.Pos[int] // position of the top-left corner
+	nodeType  NodeType
+	diameter  float64       // diameter
+	dist      float64       // distance from parent node
+	angleRads float64       // angle (clockwise) from directly below parent (in radians)
+	pos       util.Pos[int] // position of the top-left corner
 
 	activated bool // whether this node has been used, or is vestigial
 }
@@ -84,26 +92,47 @@ func (n *TreeNode) Draw(
 	screen *ebiten.Image,
 	viewport localutil.Viewport,
 ) {
+	// Draw a line from this node to each child
+	for child := range n.children {
+		startPos := viewport.GameToScreen(util.Pos[int]{X: n.pos.X, Y: n.pos.Y})
+		endPos := viewport.GameToScreen(util.Pos[int]{X: child.pos.X, Y: child.pos.Y})
+		vector.StrokeLine(
+			screen,
+			float32(startPos.X),
+			float32(startPos.Y),
+			float32(endPos.X),
+			float32(endPos.Y),
+			float32(n.diameter/10),
+			color.RGBA{R: 139, G: 69, B: 19, A: 255}, // brown
+			false,
+		)
+	}
+
+	// Draw this node
 	screenPos := viewport.GameToScreen(n.pos)
 	vector.DrawFilledCircle(
 		screen,
 		float32(screenPos.X),
 		float32(screenPos.Y),
-		n.diameter/2,
+		float32(n.diameter/2),
 		NODE_COLORS[n.nodeType],
 		false,
 	)
-
 	if viewport.Debug {
 		vector.DrawFilledRect(
 			screen,
-			float32(screenPos.X)-n.diameter/2,
-			float32(screenPos.Y)-n.diameter/2,
-			n.diameter,
-			n.diameter,
+			float32(screenPos.X)-float32(n.diameter/2),
+			float32(screenPos.Y)-float32(n.diameter/2),
+			float32(n.diameter),
+			float32(n.diameter),
 			color.RGBA{R: 255, G: 0, B: 0, A: 10},
 			false,
 		)
+	}
+
+	// Draw all child nodes
+	for child := range n.children {
+		child.Draw(screen, viewport)
 	}
 }
 
@@ -136,7 +165,7 @@ func (n *TreeNode) mutate() {
 
 	// Chance of mutating this node's diameter
 	if n.random.Float32() < NODE_MUTATE_CHANCE_DIAMETER {
-		diameterChange := n.random.Float32()*16.0 - 8.0
+		diameterChange := n.random.Float64()*16.0 - 8.0
 		n.diameter += diameterChange
 		if n.diameter < NODE_MIN_DIAMETER {
 			n.diameter = NODE_MIN_DIAMETER
@@ -176,16 +205,27 @@ func (n *TreeNode) mutate() {
 
 	// Chance to mutate angle between this node and its parent
 	if n.random.Float32() < NODE_MUTATE_CHANCE_ANGLE {
-		angleChange := (n.random.Float32() * 30) - 30.0
-		n.angle += angleChange
+		angleChange := (n.random.Float64() * 0.5) - 0.5
+		n.angleRads += angleChange
 	}
 
 	// Chance to mutate distance between this node and its parent
 	if n.random.Float32() < NODE_MUTATE_CHANCE_DISTANCE {
-		distChange := (n.random.Float32() * 30.0) - 30.0
+		distChange := (n.random.Float64() * 30.0) - 30.0
 		n.dist += distChange
 		if n.dist < NODE_MIN_DISTANCE {
 			n.dist = NODE_MIN_DISTANCE
 		}
+	}
+}
+
+func (n *TreeNode) initPosition(parentPos util.Pos[int]) {
+	// Calculate the position of this node based on its parent
+	n.pos.X = parentPos.X + int(n.dist*math.Cos(n.angleRads))
+	n.pos.Y = parentPos.Y + int(n.dist*math.Sin(n.angleRads))
+
+	// Adjust the position of all child nodes
+	for child := range n.children {
+		child.initPosition(n.pos)
 	}
 }
