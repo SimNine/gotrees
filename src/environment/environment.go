@@ -2,6 +2,7 @@ package environment
 
 import (
 	"image/color"
+	"log"
 	"math/rand"
 
 	"github.com/SimNine/go-solitaire/src/util"
@@ -27,10 +28,10 @@ func NewEnvironment(
 
 		dims: dims,
 
-		trees: []*genetree.GeneTree{},
-		sun:   []*ParticleSun{},
-		rain:  []*ParticleRain{},
-		// seeds: []*ParticleSeed{},
+		trees: map[*genetree.GeneTree]struct{}{},
+		sun:   map[*ParticleSun]struct{}{},
+		rain:  map[*ParticleRain]struct{}{},
+		// seeds: map[*ParticleSeed]struct{}{},
 
 		landscape: NewLandscape(
 			random,
@@ -43,13 +44,10 @@ func NewEnvironment(
 	for i := 0; i < 10; i++ {
 		xPos := random.Intn(dims.X)
 		yPos := env.landscape.groundLevels[xPos]
-		env.trees = append(
-			env.trees,
-			genetree.NewGeneTree(
-				random,
-				util.Pos[int]{X: xPos, Y: yPos},
-			),
-		)
+		env.trees[genetree.NewGeneTree(
+			random,
+			util.Pos[int]{X: xPos, Y: yPos},
+		)] = struct{}{}
 	}
 
 	return env
@@ -60,10 +58,10 @@ type Environment struct {
 
 	dims util.Dims
 
-	trees []*genetree.GeneTree
-	sun   []*ParticleSun
-	rain  []*ParticleRain
-	// seeds []*ParticleSeed
+	trees map[*genetree.GeneTree]struct{}
+	sun   map[*ParticleSun]struct{}
+	rain  map[*ParticleRain]struct{}
+	// seeds map[*ParticleSeed]struct{}
 
 	landscape *Landscape
 }
@@ -79,15 +77,15 @@ func (e *Environment) Draw(
 	e.landscape.Draw(screen, viewport)
 
 	// Draw the trees
-	for _, tree := range e.trees {
+	for tree := range e.trees {
 		tree.Draw(screen, viewport)
 	}
 
 	// Draw the particles
-	for _, s := range e.sun {
+	for s := range e.sun {
 		s.Draw(screen, viewport)
 	}
-	for _, r := range e.rain {
+	for r := range e.rain {
 		r.Draw(screen, viewport)
 	}
 	// for _, s := range e.seeds {
@@ -96,4 +94,71 @@ func (e *Environment) Draw(
 }
 
 func (e *Environment) Update() {
+	tps := ebiten.ActualTPS()
+	log.Println("TPS:", tps)
+
+	e.addNewSun()
+	e.addNewRain()
+
+	for sun := range e.sun {
+		sun.tick()
+	}
+	for rain := range e.rain {
+		rain.tick()
+	}
+	// for _, seed := range e.seeds {
+	// 	seed.tick()
+	// }
+	e.collideSunWithGround(e.sun)
+	e.collideRainWithGround(e.rain)
+
+	log.Println("Num Sun:", len(e.sun), "Num Rain:", len(e.rain))
+}
+
+func (e *Environment) addNewSun() {
+	for i := 0; i < 2; i++ {
+		pct := e.random.Float32()
+		pct = pct * pct
+		xPos := min(int(pct*float32(e.dims.X)), e.dims.X-1)
+		e.sun[NewParticleSun(
+			util.Pos[int]{X: xPos, Y: 0},
+		)] = struct{}{}
+	}
+}
+
+func (e *Environment) addNewRain() {
+	for i := 0; i < 2; i++ {
+		pct := e.random.Float32()
+		pct = 1.0 - pct*pct
+		xPos := min(int(pct*float32(e.dims.X)), e.dims.X-1)
+		e.rain[NewParticleRain(
+			util.Pos[int]{X: xPos, Y: 0},
+		)] = struct{}{}
+	}
+}
+
+func (e *Environment) collideSunWithGround(particles map[*ParticleSun]struct{}) {
+	remParticles := []*ParticleSun{}
+	for p := range particles {
+		if (*p).collidesWithGround(e.landscape) {
+			(*p).consume()
+			remParticles = append(remParticles, p)
+		}
+	}
+	for _, p := range remParticles {
+		delete(particles, p)
+	}
+}
+
+func (e *Environment) collideRainWithGround(particles map[*ParticleRain]struct{}) {
+	remParticles := []*ParticleRain{}
+	for p := range particles {
+		if (*p).collidesWithGround(e.landscape) {
+			(*p).consume()
+			remParticles = append(remParticles, p)
+		}
+	}
+	for _, p := range remParticles {
+		delete(particles, p)
+	}
 }

@@ -34,4 +34,5 @@ func (s *Simulation) Draw(
 }
 
 func (s *Simulation) Update() {
+	s.env.Update()
 }

@@ -11,6 +11,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
+const SUN_BASE_POWER = 70000
+const SUN_POWER_PER_TICK = -45
+const RAIN_BASE_POWER = -50000
+const RAIN_POWER_PER_TICK = 55
+
 //////////////////
 // Particle
 //////////////////
@@ -19,6 +24,7 @@ type Particle interface {
 	tick()
 	collidesWithTree(*genetree.GeneTree) bool
 	collidesWithNode(*genetree.TreeNode) bool
+	collidesWithGround(*Landscape) bool
 	consume()
 }
 
@@ -67,6 +73,14 @@ func (p *baseParticle) collidesWithNode(n *genetree.TreeNode) bool {
 	return n.IsPointInBounds(p.pos)
 }
 
+func (p *baseParticle) collidesWithGround(l *Landscape) bool {
+	if l == nil {
+		return false
+	}
+
+	return l.tileType[p.pos.X][p.pos.Y] == tileTypeGround
+}
+
 func (p *baseParticle) consume() {
 	p.isConsumed = true
 	p.color = color.RGBA{R: 0, G: 0, B: 0, A: 0}
@@ -76,9 +90,9 @@ func (p *baseParticle) consume() {
 // ParticleRain
 //////////////////
 
-func NewParticleRain(pos util.Pos[int], power int) *ParticleRain {
+func NewParticleRain(pos util.Pos[int]) *ParticleRain {
 	return &ParticleRain{
-		baseParticle: newParticle(pos, power, color.RGBA{R: 0, G: 0, B: 255, A: 255}),
+		baseParticle: newParticle(pos, RAIN_BASE_POWER, color.RGBA{R: 0, G: 0, B: 255, A: 255}),
 	}
 }
 
@@ -88,16 +102,16 @@ type ParticleRain struct {
 
 func (p *ParticleRain) tick() {
 	p.pos.Y += 1
-	p.power += 1 // TODO: update
+	p.power += RAIN_POWER_PER_TICK
 }
 
 //////////////////
 // ParticleSun
 //////////////////
 
-func NewParticleSun(pos util.Pos[int], power int) *ParticleSun {
+func NewParticleSun(pos util.Pos[int]) *ParticleSun {
 	return &ParticleSun{
-		baseParticle: newParticle(pos, power, color.RGBA{R: 255, G: 255, B: 0, A: 255}),
+		baseParticle: newParticle(pos, SUN_BASE_POWER, color.RGBA{R: 255, G: 255, B: 0, A: 255}),
 	}
 }
 
@@ -107,5 +121,5 @@ type ParticleSun struct {
 
 func (p *ParticleSun) tick() {
 	p.pos.Y += 1
-	p.power -= 1 // TODO: update
+	p.power += SUN_POWER_PER_TICK
 }
