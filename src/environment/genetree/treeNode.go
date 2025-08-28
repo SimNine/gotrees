@@ -92,9 +92,11 @@ func (n *TreeNode) Draw(
 	screen *ebiten.Image,
 	viewport localutil.Viewport,
 ) {
+	screenPos := viewport.GameToScreen(n.pos)
+
 	// Draw a line from this node to each child
 	for child := range n.children {
-		startPos := viewport.GameToScreen(util.Pos[int]{X: n.pos.X, Y: n.pos.Y})
+		startPos := screenPos
 		endPos := viewport.GameToScreen(util.Pos[int]{X: child.pos.X, Y: child.pos.Y})
 		vector.StrokeLine(
 			screen,
@@ -109,7 +111,6 @@ func (n *TreeNode) Draw(
 	}
 
 	// Draw this node
-	screenPos := viewport.GameToScreen(n.pos)
 	vector.DrawFilledCircle(
 		screen,
 		float32(screenPos.X),
@@ -167,9 +168,9 @@ func (n *TreeNode) mutate() {
 	if n.random.Float32() < NODE_MUTATE_CHANCE_DIAMETER {
 		diameterChange := n.random.Float64()*16.0 - 8.0
 		n.diameter += diameterChange
-		if n.diameter < NODE_MIN_DIAMETER {
-			n.diameter = NODE_MIN_DIAMETER
-		}
+	}
+	if n.diameter < NODE_MIN_DIAMETER {
+		n.diameter = NODE_MIN_DIAMETER
 	}
 
 	// Chance to lose each child node, otherwise mutate them
@@ -194,7 +195,7 @@ func (n *TreeNode) mutate() {
 		for {
 			if n.random.Float32() < NODE_MUTATE_CHANCE_ADD_NODE {
 				// Add a new child node
-				child := NewTreeNodeBase(n.random, util.Pos[int]{X: n.pos.X, Y: n.pos.Y + int(n.diameter)})
+				child := NewTreeNodeBase(n.random, util.Pos[int]{X: n.pos.X, Y: n.pos.Y})
 				n.children[child] = struct{}{}
 				child.mutate()
 			} else {
@@ -213,9 +214,9 @@ func (n *TreeNode) mutate() {
 	if n.random.Float32() < NODE_MUTATE_CHANCE_DISTANCE {
 		distChange := (n.random.Float64() * 30.0) - 30.0
 		n.dist += distChange
-		if n.dist < NODE_MIN_DISTANCE {
-			n.dist = NODE_MIN_DISTANCE
-		}
+	}
+	if n.dist < NODE_MIN_DISTANCE {
+		n.dist = NODE_MIN_DISTANCE
 	}
 }
 
