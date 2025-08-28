@@ -18,8 +18,7 @@ func NewGeneTree(
 		energy:    0,
 
 		root: *NewTreeNodeBase(
-			TREENODE_STRUCT,
-			20,
+			random,
 			pos,
 		),
 		age: 0,
