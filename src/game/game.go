@@ -43,7 +43,7 @@ func (g *Game) Init() {
 	ebiten.SetWindowTitle("GeneTrees")
 	ebiten.SetWindowSize(g.windowSize.X, g.windowSize.Y)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
-	// ebiten.SetTPS(10000)
+	ebiten.SetTPS(500)
 }
 
 func (g *Game) Update() error {

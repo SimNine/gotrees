@@ -97,9 +97,9 @@ func (e *Environment) Update() {
 	tps := ebiten.ActualTPS()
 	log.Println("TPS:", tps)
 
+	// Do all stuff with particles
 	e.addNewSun()
 	e.addNewRain()
-
 	for sun := range e.sun {
 		sun.tick()
 	}
@@ -111,6 +111,17 @@ func (e *Environment) Update() {
 	// }
 	e.collideSunWithGround(e.sun)
 	e.collideRainWithGround(e.rain)
+	e.collideSunWithTrees(e.sun)
+	e.collideRainWithTrees(e.rain)
+
+	// // Update all trees
+	// for tree := range e.trees {
+	// 	tree.Update()
+	// }
+
+	// Compute fitness of all trees
+
+	// After a certain number of ticks, reproduce or kill each tree based on fitness
 
 	log.Println("Num Sun:", len(e.sun), "Num Rain:", len(e.rain))
 }
@@ -153,9 +164,41 @@ func (e *Environment) collideSunWithGround(particles map[*ParticleSun]struct{}) 
 func (e *Environment) collideRainWithGround(particles map[*ParticleRain]struct{}) {
 	remParticles := []*ParticleRain{}
 	for p := range particles {
-		if (*p).collidesWithGround(e.landscape) {
-			(*p).consume()
+		if p.collidesWithGround(e.landscape) {
+			p.consume()
 			remParticles = append(remParticles, p)
+		}
+	}
+	for _, p := range remParticles {
+		delete(particles, p)
+	}
+}
+
+func (e *Environment) collideSunWithTrees(particles map[*ParticleSun]struct{}) {
+	remParticles := []*ParticleSun{}
+	for p := range particles {
+		for tree := range e.trees {
+			if p.collidesWithTree(tree) {
+				p.consume()
+				remParticles = append(remParticles, p)
+				break
+			}
+		}
+	}
+	for _, p := range remParticles {
+		delete(particles, p)
+	}
+}
+
+func (e *Environment) collideRainWithTrees(particles map[*ParticleRain]struct{}) {
+	remParticles := []*ParticleRain{}
+	for p := range particles {
+		for tree := range e.trees {
+			if p.collidesWithTree(tree) {
+				p.consume()
+				remParticles = append(remParticles, p)
+				break
+			}
 		}
 	}
 	for _, p := range remParticles {
