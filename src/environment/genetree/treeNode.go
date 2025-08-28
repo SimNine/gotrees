@@ -77,6 +77,7 @@ func NewTreeNode(
 type TreeNode struct {
 	random *rand.Rand
 
+	// Cached data; should be invalidated on any change
 	image      *ebiten.Image
 	debugImage *ebiten.Image
 
@@ -255,4 +256,26 @@ func (n *TreeNode) initPosition(parentPos util.Pos[int]) {
 	for child := range n.children {
 		child.initPosition(n.pos)
 	}
+}
+
+func (n *TreeNode) getMaxSubtreeBounds() (util.Pos[int], util.Pos[int]) {
+	topLeft := n.pos
+	bottomRight := n.pos.Translate(int(n.diameter), int(n.diameter))
+	for child := range n.children {
+		childTopLeft, childBottomRight := child.getMaxSubtreeBounds()
+
+		if childTopLeft.X < topLeft.X {
+			topLeft.X = childTopLeft.X
+		}
+		if childTopLeft.Y < topLeft.Y {
+			topLeft.Y = childTopLeft.Y
+		}
+		if childBottomRight.X > bottomRight.X {
+			bottomRight.X = childBottomRight.X
+		}
+		if childBottomRight.Y > bottomRight.Y {
+			bottomRight.Y = childBottomRight.Y
+		}
+	}
+	return topLeft, bottomRight
 }
