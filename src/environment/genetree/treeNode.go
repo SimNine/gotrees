@@ -38,7 +38,7 @@ func NewTreeNodeBase(
 		true,
 	)
 
-	// Adjust the position of all child nodes
+	// init the position of all child nodes
 	for child := range treeNode.children {
 		child.initPosition(pos)
 	}
@@ -77,6 +77,9 @@ func NewTreeNode(
 type TreeNode struct {
 	random *rand.Rand
 
+	image      *ebiten.Image
+	debugImage *ebiten.Image
+
 	children map[*TreeNode]struct{}
 
 	nodeType  NodeType
@@ -92,11 +95,12 @@ func (n *TreeNode) Draw(
 	screen *ebiten.Image,
 	viewport localutil.Viewport,
 ) {
-	screenPos := viewport.GameToScreen(n.pos)
+	centerPos := viewport.GameToScreen(n.pos)
+	topleftPos := centerPos.Sub(util.Pos[int]{X: int(n.diameter / 2), Y: int(n.diameter / 2)})
 
 	// Draw a line from this node to each child
 	for child := range n.children {
-		startPos := screenPos
+		startPos := centerPos
 		endPos := viewport.GameToScreen(util.Pos[int]{X: child.pos.X, Y: child.pos.Y})
 		vector.StrokeLine(
 			screen,
@@ -111,24 +115,46 @@ func (n *TreeNode) Draw(
 	}
 
 	// Draw this node
-	vector.DrawFilledCircle(
-		screen,
-		float32(screenPos.X),
-		float32(screenPos.Y),
-		float32(n.diameter/2),
-		NODE_COLORS[n.nodeType],
-		false,
-	)
-	if viewport.Debug {
-		vector.DrawFilledRect(
-			screen,
-			float32(screenPos.X)-float32(n.diameter/2),
-			float32(screenPos.Y)-float32(n.diameter/2),
-			float32(n.diameter),
-			float32(n.diameter),
-			color.RGBA{R: 255, G: 0, B: 0, A: 10},
+	if n.image == nil {
+		imgSize := int(math.Ceil(n.diameter))
+		if imgSize < 1 {
+			imgSize = 1
+		}
+		n.image = ebiten.NewImage(imgSize, imgSize)
+		vector.DrawFilledCircle(
+			n.image,
+			float32(imgSize)/2,
+			float32(imgSize)/2,
+			float32(n.diameter)/2,
+			NODE_COLORS[n.nodeType],
 			false,
 		)
+	}
+	drawOptions := &ebiten.DrawImageOptions{}
+	drawOptions.GeoM.Translate(float64(topleftPos.X), float64(topleftPos.Y))
+	screen.DrawImage(n.image, drawOptions)
+
+	// Draw the debug image if in debug mode
+	if viewport.Debug {
+		if n.debugImage == nil {
+			imgSize := int(math.Ceil(n.diameter))
+			if imgSize < 1 {
+				imgSize = 1
+			}
+			n.debugImage = ebiten.NewImage(imgSize, imgSize)
+			vector.DrawFilledRect(
+				n.debugImage,
+				0,
+				0,
+				float32(imgSize),
+				float32(imgSize),
+				color.RGBA{R: 255, G: 0, B: 0, A: 10},
+				false,
+			)
+		}
+		drawOptions := &ebiten.DrawImageOptions{}
+		drawOptions.GeoM.Translate(float64(topleftPos.X), float64(topleftPos.Y))
+		screen.DrawImage(n.debugImage, drawOptions)
 	}
 
 	// Draw all child nodes
