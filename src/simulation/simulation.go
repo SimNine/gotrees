@@ -3,13 +3,13 @@ package simulation
 import (
 	"math/rand"
 
-	urfutils "github.com/SimNine/go-urfutils/src"
+	"github.com/SimNine/go-urfutils/src/geom"
 	"github.com/SimNine/gotrees/src/environment"
 	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-func NewSimulation(dims urfutils.Dims) *Simulation {
+func NewSimulation(dims geom.Dims[int]) *Simulation {
 	random := rand.New(rand.NewSource(0))
 	return &Simulation{
 		env: environment.NewEnvironment(

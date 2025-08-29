@@ -4,7 +4,7 @@ import (
 	"image"
 	"image/color"
 
-	urfutils "github.com/SimNine/go-urfutils/src"
+	"github.com/SimNine/go-urfutils/src/geom"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -13,7 +13,7 @@ var whiteImage *ebiten.Image = nil
 var whiteSubImage *ebiten.Image = nil
 
 func CreateHollowRectangleImage(
-	dims urfutils.Dims,
+	dims geom.Dims[int],
 	c color.Color,
 ) *ebiten.Image {
 	if whiteImage == nil {

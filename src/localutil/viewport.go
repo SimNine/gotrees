@@ -1,17 +1,19 @@
 package localutil
 
-import urfutils "github.com/SimNine/go-urfutils/src"
+import (
+	"github.com/SimNine/go-urfutils/src/geom"
+)
 
 type Viewport struct {
-	Pos   urfutils.Pos[int] // Top-left corner of the viewport in world coordinates
-	Dims  urfutils.Dims     // Dimensions of the viewport in pixels
+	Pos   geom.Pos[int]  // Top-left corner of the viewport in world coordinates
+	Dims  geom.Dims[int] // Dimensions of the viewport in pixels
 	Debug bool
 }
 
-func (v *Viewport) ScreenToGame(pos urfutils.Pos[int]) urfutils.Pos[int] {
+func (v *Viewport) ScreenToGame(pos geom.Pos[int]) geom.Pos[int] {
 	return pos.TranslatePos(v.Pos)
 }
 
-func (v *Viewport) GameToScreen(pos urfutils.Pos[int]) urfutils.Pos[int] {
+func (v *Viewport) GameToScreen(pos geom.Pos[int]) geom.Pos[int] {
 	return pos.Sub(v.Pos)
 }
