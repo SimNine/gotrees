@@ -2,8 +2,8 @@ package environment
 
 import (
 	"image/color"
-	"log"
 	"math/rand"
+	"slices"
 
 	"github.com/SimNine/go-urfutils/src/geom"
 	"github.com/SimNine/gotrees/src/environment/genetree"
@@ -93,9 +93,6 @@ func (e *Environment) Draw(
 }
 
 func (e *Environment) Update() {
-	tps := ebiten.ActualTPS()
-	log.Println("TPS:", tps)
-
 	// Do all stuff with particles
 	e.addNewSun()
 	e.addNewRain()
@@ -121,8 +118,33 @@ func (e *Environment) Update() {
 	// Compute fitness of all trees
 
 	// After a certain number of ticks, reproduce or kill each tree based on fitness
+}
 
-	log.Println("Num Sun:", len(e.sun), "Num Rain:", len(e.rain))
+func (e *Environment) AdvanceGeneration() {
+	// Sort trees by energy level, and remove the bottom half
+	treesList := []*genetree.GeneTree{}
+	for tree := range e.trees {
+		treesList = append(treesList, tree)
+	}
+	slices.SortFunc(treesList, func(a, b *genetree.GeneTree) int {
+		return a.Energy - b.Energy
+	})
+	treesList = treesList[:len(treesList)/2]
+
+	// Reset all remaining trees
+	for _, tree := range treesList {
+		tree.Reset()
+	}
+
+	// Move all remaining trees to a new map
+	e.trees = map[*genetree.GeneTree]struct{}{}
+	for _, tree := range treesList {
+		e.trees[tree] = struct{}{}
+	}
+}
+
+func (e *Environment) NumTrees() int {
+	return len(e.trees)
 }
 
 func (e *Environment) addNewSun() {
@@ -178,6 +200,7 @@ func (e *Environment) collideSunWithTrees(particles map[*ParticleSun]struct{}) {
 			collides, nodeType := tree.DoesPointCollide(p.pos)
 			if collides && nodeType == genetree.TREENODE_LEAF {
 				remParticles = append(remParticles, p)
+				tree.Energy += p.power
 				break
 			}
 		}
@@ -194,6 +217,7 @@ func (e *Environment) collideRainWithTrees(particles map[*ParticleRain]struct{})
 			collides, nodeType := tree.DoesPointCollide(p.pos)
 			if collides && nodeType == genetree.TREENODE_RAINCATCHER {
 				remParticles = append(remParticles, p)
+				tree.Energy += p.power
 				break
 			}
 		}

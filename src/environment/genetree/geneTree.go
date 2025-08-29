@@ -17,9 +17,9 @@ func NewGeneTree(
 	pos geom.Pos[int],
 ) *GeneTree {
 	tree := &GeneTree{
-		fitness:   0,
-		nutrients: 0,
-		energy:    0,
+		Fitness:   0,
+		Nutrients: 0,
+		Energy:    0,
 
 		root: *NewTreeNodeBase(
 			random,
@@ -41,9 +41,9 @@ type GeneTree struct {
 	debugImage *ebiten.Image
 	bounds     geom.Bounds[int]
 
-	fitness           int
-	nutrients         int     // fitness component from soil
-	energy            int     // fitness component from sunlight
+	Fitness           int
+	Nutrients         int     // fitness component from soil
+	Energy            int     // fitness component from sunlight
 	fitnessPercentile float32 // fitness as a percentile
 
 	root TreeNode
@@ -84,4 +84,11 @@ func (t *GeneTree) DoesPointCollide(pos geom.Pos[int]) (bool, NodeType) {
 
 func (t *GeneTree) IsPointInBounds(pos geom.Pos[int]) bool {
 	return t.bounds.Contains(pos)
+}
+
+func (t *GeneTree) Reset() {
+	t.Fitness = 0
+	t.Nutrients = 0
+	t.Energy = 0
+	t.fitnessPercentile = 0.0
 }
