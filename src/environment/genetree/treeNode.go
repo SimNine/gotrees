@@ -33,7 +33,7 @@ func NewTreeNodeBase(
 		TREENODE_STRUCT,
 		(random.Float64()*9.0)+NODE_MIN_DIAMETER,
 		0,
-		0,
+		-math.Pi/2,
 		pos,
 		true,
 	)
@@ -239,7 +239,7 @@ func (n *TreeNode) mutate() {
 
 	// Chance to mutate angle between this node and its parent
 	if n.random.Float32() < NODE_MUTATE_CHANCE_ANGLE {
-		angleChange := (n.random.Float64() * 0.5) - 0.5
+		angleChange := (n.random.Float64() * (math.Pi / 2)) - (math.Pi / 2)
 		n.angleRads += angleChange
 	}
 
