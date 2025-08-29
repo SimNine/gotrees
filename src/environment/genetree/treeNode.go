@@ -157,8 +157,20 @@ func (n *TreeNode) Draw(
 	}
 }
 
-func (n *TreeNode) IsPointInBounds(pos geom.Pos[int]) bool {
-	// TODO
+func (n *TreeNode) DoesPointCollideRecursive(pos geom.Pos[int]) bool {
+	xDiff := math.Abs(pos.ToFloatPos().X - n.pos.ToFloatPos().X)
+	yDiff := math.Abs(pos.ToFloatPos().Y - n.pos.ToFloatPos().Y)
+	collides := n.diameter >= math.Sqrt(math.Pow(xDiff, 2)+math.Pow(yDiff, 2))
+	if collides {
+		return true
+	}
+
+	for child := range n.children {
+		if child.DoesPointCollideRecursive(pos) {
+			return true
+		}
+	}
+
 	return false
 }
 

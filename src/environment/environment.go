@@ -110,8 +110,8 @@ func (e *Environment) Update() {
 	// }
 	e.collideSunWithGround(e.sun)
 	e.collideRainWithGround(e.rain)
-	// e.collideSunWithTrees(e.sun)
-	// e.collideRainWithTrees(e.rain)
+	e.collideSunWithTrees(e.sun)
+	e.collideRainWithTrees(e.rain)
 
 	// // Update all trees
 	// for tree := range e.trees {
@@ -177,7 +177,7 @@ func (e *Environment) collideSunWithTrees(particles map[*ParticleSun]struct{}) {
 	remParticles := []*ParticleSun{}
 	for p := range particles {
 		for tree := range e.trees {
-			if p.collidesWithTree(tree) {
+			if tree.DoesPointCollide(p.pos) {
 				p.consume()
 				remParticles = append(remParticles, p)
 				break
@@ -193,7 +193,7 @@ func (e *Environment) collideRainWithTrees(particles map[*ParticleRain]struct{})
 	remParticles := []*ParticleRain{}
 	for p := range particles {
 		for tree := range e.trees {
-			if p.collidesWithTree(tree) {
+			if tree.DoesPointCollide(p.pos) {
 				p.consume()
 				remParticles = append(remParticles, p)
 				break

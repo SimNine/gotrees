@@ -56,22 +56,6 @@ func (b *baseParticle) Draw(
 	// }
 }
 
-func (p *baseParticle) collidesWithTree(t *genetree.GeneTree) bool {
-	if t == nil {
-		return false
-	}
-
-	return t.IsPointInBounds(p.pos)
-}
-
-func (p *baseParticle) collidesWithNode(n *genetree.TreeNode) bool {
-	if n == nil {
-		return false
-	}
-
-	return n.IsPointInBounds(p.pos)
-}
-
 func (p *baseParticle) collidesWithGround(l *Landscape) bool {
 	if l == nil {
 		return false
