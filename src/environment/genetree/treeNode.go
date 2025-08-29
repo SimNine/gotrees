@@ -138,19 +138,12 @@ func (n *TreeNode) Draw(
 	// Draw the debug image if in debug mode
 	if viewport.Debug {
 		if n.debugImage == nil {
-			imgSize := int(math.Ceil(n.diameter))
-			if imgSize < 1 {
-				imgSize = 1
-			}
-			n.debugImage = ebiten.NewImage(imgSize, imgSize)
-			vector.DrawFilledRect(
-				n.debugImage,
-				0,
-				0,
-				float32(imgSize),
-				float32(imgSize),
-				color.RGBA{R: 255, G: 0, B: 0, A: 10},
-				false,
+			n.debugImage = localutil.CreateHollowRectangleImage(
+				util.Dims{
+					X: int(math.Ceil(n.diameter)),
+					Y: int(math.Ceil(n.diameter)),
+				},
+				color.RGBA{R: 255, G: 255, B: 0, A: 255},
 			)
 		}
 		drawOptions := &ebiten.DrawImageOptions{}
@@ -259,8 +252,9 @@ func (n *TreeNode) initPosition(parentPos util.Pos[int]) {
 }
 
 func (n *TreeNode) getMaxSubtreeBounds() (util.Pos[int], util.Pos[int]) {
-	topLeft := n.pos.Sub(util.Pos[int]{X: int(n.diameter / 2), Y: int(n.diameter / 2)})
-	bottomRight := topLeft.Translate(int(n.diameter), int(n.diameter))
+	dCeil := math.Ceil(n.diameter / 2.0)
+	topLeft := n.pos.Sub(util.Pos[int]{X: int(dCeil), Y: int(dCeil)})
+	bottomRight := n.pos.Translate(int(dCeil), int(dCeil))
 	for child := range n.children {
 		childTopLeft, childBottomRight := child.getMaxSubtreeBounds()
 

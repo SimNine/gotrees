@@ -1,14 +1,12 @@
 package genetree
 
 import (
-	"image"
 	"image/color"
 	"math/rand"
 
 	"github.com/SimNine/go-solitaire/src/util"
 	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 var whiteImage *ebiten.Image
@@ -60,42 +58,18 @@ func (t *GeneTree) Draw(
 	viewport localutil.Viewport,
 ) {
 	if t.debugImage == nil {
-
-		if whiteImage == nil {
-			whiteImage = ebiten.NewImage(3, 3)
-			whiteImage.Fill(color.White)
-			whiteSubImage = whiteImage.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image)
-		}
-
-		imgSizeX := t.bottomRight.X - t.topLeft.X
-		imgSizeY := t.bottomRight.Y - t.topLeft.Y
-		t.debugImage = ebiten.NewImage(
-			imgSizeX,
-			imgSizeY,
+		t.debugImage = localutil.CreateHollowRectangleImage(
+			util.Dims{
+				X: t.bottomRight.X - t.topLeft.X,
+				Y: t.bottomRight.Y - t.topLeft.Y,
+			},
+			color.RGBA{
+				R: 255,
+				G: 0,
+				B: 0,
+				A: 255,
+			},
 		)
-
-		var path vector.Path
-		path.MoveTo(0, 0)
-		path.LineTo(float32(imgSizeX), 0)
-		path.LineTo(float32(imgSizeX), float32(imgSizeY))
-		path.LineTo(0, float32(imgSizeY))
-		path.Close()
-
-		op := &vector.StrokeOptions{}
-		op.LineCap = vector.LineCapSquare
-		op.LineJoin = vector.LineJoinMiter
-		op.MiterLimit = 5.0
-		op.Width = 2.0
-		vs, is := path.AppendVerticesAndIndicesForStroke(nil, nil, op)
-		for i := range vs {
-			vs[i].SrcX = 1
-			vs[i].SrcY = 1
-			vs[i].ColorR = 1
-			vs[i].ColorG = 0
-			vs[i].ColorB = 0
-			vs[i].ColorA = 1
-		}
-		t.debugImage.DrawTriangles(vs, is, whiteSubImage, nil)
 	}
 	if viewport.Debug {
 		op := &ebiten.DrawImageOptions{}
