@@ -3,37 +3,37 @@ package game
 import (
 	"log"
 
-	"github.com/SimNine/go-solitaire/src/util"
+	urfutils "github.com/SimNine/go-urfutils/src"
 	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/SimNine/gotrees/src/simulation"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-func NewGame(dims util.Dims) *Game {
+func NewGame(dims urfutils.Dims) *Game {
 	return &Game{
 		windowSize:       dims,
 		windowRenderDims: dims,
 		viewport: localutil.Viewport{
-			Pos:   util.Pos[int]{X: 0, Y: 0},
+			Pos:   urfutils.Pos[int]{X: 0, Y: 0},
 			Dims:  dims,
 			Debug: true,
 		},
-		cursorWindowPos: util.Pos[int]{X: 0, Y: 0},
+		cursorWindowPos: urfutils.Pos[int]{X: 0, Y: 0},
 		cursorPressed:   false,
 		simulation: simulation.NewSimulation(
-			util.Dims{X: 4000, Y: 2000},
+			urfutils.Dims{X: 4000, Y: 2000},
 		),
 	}
 }
 
 type Game struct {
-	windowSize       util.Dims
-	windowRenderDims util.Dims
+	windowSize       urfutils.Dims
+	windowRenderDims urfutils.Dims
 
 	viewport        localutil.Viewport
-	cursorWindowPos util.Pos[int]
-	prevCursorPos   util.Pos[int]
+	cursorWindowPos urfutils.Pos[int]
+	prevCursorPos   urfutils.Pos[int]
 	cursorPressed   bool
 
 	simulation *simulation.Simulation
@@ -51,7 +51,7 @@ func (g *Game) Update() error {
 	g.simulation.Update()
 
 	// Handle mouse input
-	g.setCursorPos(util.MakePosFromTuple(ebiten.CursorPosition()))
+	g.setCursorPos(urfutils.MakePosFromTuple(ebiten.CursorPosition()))
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		g.mouseDown()
 	} else if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
@@ -102,7 +102,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return g.windowRenderDims.X, g.windowRenderDims.Y
 }
 
-func (g *Game) setCursorPos(pos util.Pos[int]) {
+func (g *Game) setCursorPos(pos urfutils.Pos[int]) {
 	g.prevCursorPos = g.cursorWindowPos
 	g.cursorWindowPos = pos
 }

@@ -1,17 +1,17 @@
 package localutil
 
-import "github.com/SimNine/go-solitaire/src/util"
+import urfutils "github.com/SimNine/go-urfutils/src"
 
 type Viewport struct {
-	Pos   util.Pos[int] // Top-left corner of the viewport in world coordinates
-	Dims  util.Dims     // Dimensions of the viewport in pixels
+	Pos   urfutils.Pos[int] // Top-left corner of the viewport in world coordinates
+	Dims  urfutils.Dims     // Dimensions of the viewport in pixels
 	Debug bool
 }
 
-func (v *Viewport) ScreenToGame(pos util.Pos[int]) util.Pos[int] {
+func (v *Viewport) ScreenToGame(pos urfutils.Pos[int]) urfutils.Pos[int] {
 	return pos.TranslatePos(v.Pos)
 }
 
-func (v *Viewport) GameToScreen(pos util.Pos[int]) util.Pos[int] {
+func (v *Viewport) GameToScreen(pos urfutils.Pos[int]) urfutils.Pos[int] {
 	return pos.Sub(v.Pos)
 }

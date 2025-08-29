@@ -5,7 +5,7 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/SimNine/go-solitaire/src/util"
+	urfutils "github.com/SimNine/go-urfutils/src"
 	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -25,7 +25,7 @@ const NODE_MUTATE_CHANCE_DISTANCE = 0.15
 
 func NewTreeNodeBase(
 	random *rand.Rand,
-	pos util.Pos[int],
+	pos urfutils.Pos[int],
 ) *TreeNode {
 	treeNode := NewTreeNode(
 		random,
@@ -53,7 +53,7 @@ func NewTreeNode(
 	diameter float64,
 	dist float64,
 	angle float64,
-	pos util.Pos[int],
+	pos urfutils.Pos[int],
 	mutate bool,
 ) *TreeNode {
 	treeNode := &TreeNode{
@@ -84,10 +84,10 @@ type TreeNode struct {
 	children map[*TreeNode]struct{}
 
 	nodeType  NodeType
-	diameter  float64       // diameter
-	dist      float64       // distance from parent node
-	angleRads float64       // angle (clockwise) from directly below parent (in radians)
-	pos       util.Pos[int] // position of the top-left corner
+	diameter  float64           // diameter
+	dist      float64           // distance from parent node
+	angleRads float64           // angle (clockwise) from directly below parent (in radians)
+	pos       urfutils.Pos[int] // position of the top-left corner
 
 	activated bool // whether this node has been used, or is vestigial
 }
@@ -97,12 +97,12 @@ func (n *TreeNode) Draw(
 	viewport localutil.Viewport,
 ) {
 	centerPos := viewport.GameToScreen(n.pos)
-	topleftPos := centerPos.Sub(util.Pos[int]{X: int(n.diameter / 2), Y: int(n.diameter / 2)})
+	topleftPos := centerPos.Sub(urfutils.Pos[int]{X: int(n.diameter / 2), Y: int(n.diameter / 2)})
 
 	// Draw a line from this node to each child
 	for child := range n.children {
 		startPos := centerPos
-		endPos := viewport.GameToScreen(util.Pos[int]{X: child.pos.X, Y: child.pos.Y})
+		endPos := viewport.GameToScreen(urfutils.Pos[int]{X: child.pos.X, Y: child.pos.Y})
 		vector.StrokeLine(
 			screen,
 			float32(startPos.X),
@@ -139,7 +139,7 @@ func (n *TreeNode) Draw(
 	if viewport.Debug {
 		if n.debugImage == nil {
 			n.debugImage = localutil.CreateHollowRectangleImage(
-				util.Dims{
+				urfutils.Dims{
 					X: int(math.Ceil(n.diameter)),
 					Y: int(math.Ceil(n.diameter)),
 				},
@@ -157,7 +157,7 @@ func (n *TreeNode) Draw(
 	}
 }
 
-func (n *TreeNode) IsPointInBounds(pos util.Pos[int]) bool {
+func (n *TreeNode) IsPointInBounds(pos urfutils.Pos[int]) bool {
 	// TODO
 	return false
 }
@@ -215,7 +215,7 @@ func (n *TreeNode) mutate() {
 		for {
 			if n.random.Float32() < NODE_MUTATE_CHANCE_ADD_NODE {
 				// Add a new child node
-				child := NewTreeNodeBase(n.random, util.Pos[int]{X: n.pos.X, Y: n.pos.Y})
+				child := NewTreeNodeBase(n.random, urfutils.Pos[int]{X: n.pos.X, Y: n.pos.Y})
 				n.children[child] = struct{}{}
 				child.mutate()
 			} else {
@@ -240,7 +240,7 @@ func (n *TreeNode) mutate() {
 	}
 }
 
-func (n *TreeNode) initPosition(parentPos util.Pos[int]) {
+func (n *TreeNode) initPosition(parentPos urfutils.Pos[int]) {
 	// Calculate the position of this node based on its parent
 	n.pos.X = parentPos.X + int(n.dist*math.Cos(n.angleRads))
 	n.pos.Y = parentPos.Y + int(n.dist*math.Sin(n.angleRads))
@@ -251,9 +251,9 @@ func (n *TreeNode) initPosition(parentPos util.Pos[int]) {
 	}
 }
 
-func (n *TreeNode) getMaxSubtreeBounds() (util.Pos[int], util.Pos[int]) {
+func (n *TreeNode) getMaxSubtreeBounds() (urfutils.Pos[int], urfutils.Pos[int]) {
 	dCeil := math.Ceil(n.diameter / 2.0)
-	topLeft := n.pos.Sub(util.Pos[int]{X: int(dCeil), Y: int(dCeil)})
+	topLeft := n.pos.Sub(urfutils.Pos[int]{X: int(dCeil), Y: int(dCeil)})
 	bottomRight := n.pos.Translate(int(dCeil), int(dCeil))
 	for child := range n.children {
 		childTopLeft, childBottomRight := child.getMaxSubtreeBounds()

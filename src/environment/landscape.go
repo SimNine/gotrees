@@ -6,7 +6,7 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/SimNine/go-solitaire/src/util"
+	urfutils "github.com/SimNine/go-urfutils/src"
 	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -20,7 +20,7 @@ const (
 
 func NewLandscape(
 	random *rand.Rand,
-	dims util.Dims,
+	dims urfutils.Dims,
 	baseLevel int,
 ) *Landscape {
 	log.Printf("Creating landscape with dims %v and base level %d\n", dims, baseLevel)

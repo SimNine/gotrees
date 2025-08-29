@@ -5,7 +5,7 @@ import (
 	"log"
 	"math/rand"
 
-	"github.com/SimNine/go-solitaire/src/util"
+	urfutils "github.com/SimNine/go-urfutils/src"
 	"github.com/SimNine/gotrees/src/environment/genetree"
 	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -20,7 +20,7 @@ var COLOR_SKYBLUE = color.RGBA{
 
 func NewEnvironment(
 	random *rand.Rand,
-	dims util.Dims,
+	dims urfutils.Dims,
 ) *Environment {
 
 	env := &Environment{
@@ -46,7 +46,7 @@ func NewEnvironment(
 		yPos := env.landscape.groundLevels[xPos]
 		env.trees[genetree.NewGeneTree(
 			random,
-			util.Pos[int]{X: xPos, Y: yPos},
+			urfutils.Pos[int]{X: xPos, Y: yPos},
 		)] = struct{}{}
 	}
 
@@ -56,7 +56,7 @@ func NewEnvironment(
 type Environment struct {
 	random *rand.Rand
 
-	dims util.Dims
+	dims urfutils.Dims
 
 	trees map[*genetree.GeneTree]struct{}
 	sun   map[*ParticleSun]struct{}
@@ -132,7 +132,7 @@ func (e *Environment) addNewSun() {
 		pct = pct * pct
 		xPos := min(int(pct*float32(e.dims.X)), e.dims.X-1)
 		e.sun[NewParticleSun(
-			util.Pos[int]{X: xPos, Y: 0},
+			urfutils.Pos[int]{X: xPos, Y: 0},
 		)] = struct{}{}
 	}
 }
@@ -143,7 +143,7 @@ func (e *Environment) addNewRain() {
 		pct = 1.0 - pct*pct
 		xPos := min(int(pct*float32(e.dims.X)), e.dims.X-1)
 		e.rain[NewParticleRain(
-			util.Pos[int]{X: xPos, Y: 0},
+			urfutils.Pos[int]{X: xPos, Y: 0},
 		)] = struct{}{}
 	}
 }

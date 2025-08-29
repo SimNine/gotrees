@@ -3,7 +3,7 @@ package environment
 import (
 	"image/color"
 
-	"github.com/SimNine/go-solitaire/src/util"
+	urfutils "github.com/SimNine/go-urfutils/src"
 	"github.com/SimNine/gotrees/src/environment/genetree"
 	"github.com/SimNine/gotrees/src/localutil"
 
@@ -28,7 +28,7 @@ type Particle interface {
 	consume()
 }
 
-func newParticle(pos util.Pos[int], power int, color color.RGBA) baseParticle {
+func newParticle(pos urfutils.Pos[int], power int, color color.RGBA) baseParticle {
 	return baseParticle{
 		pos:        pos,
 		power:      power,
@@ -38,7 +38,7 @@ func newParticle(pos util.Pos[int], power int, color color.RGBA) baseParticle {
 }
 
 type baseParticle struct {
-	pos        util.Pos[int]
+	pos        urfutils.Pos[int]
 	power      int
 	isConsumed bool
 	color      color.RGBA
@@ -90,7 +90,7 @@ func (p *baseParticle) consume() {
 // ParticleRain
 //////////////////
 
-func NewParticleRain(pos util.Pos[int]) *ParticleRain {
+func NewParticleRain(pos urfutils.Pos[int]) *ParticleRain {
 	return &ParticleRain{
 		baseParticle: newParticle(pos, RAIN_BASE_POWER, color.RGBA{R: 0, G: 0, B: 255, A: 255}),
 	}
@@ -109,7 +109,7 @@ func (p *ParticleRain) tick() {
 // ParticleSun
 //////////////////
 
-func NewParticleSun(pos util.Pos[int]) *ParticleSun {
+func NewParticleSun(pos urfutils.Pos[int]) *ParticleSun {
 	return &ParticleSun{
 		baseParticle: newParticle(pos, SUN_BASE_POWER, color.RGBA{R: 255, G: 255, B: 0, A: 255}),
 	}

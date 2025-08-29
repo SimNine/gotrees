@@ -1,11 +1,11 @@
 module github.com/SimNine/gotrees
 
-go 1.24.3
+go 1.24.6
 
 require github.com/hajimehoshi/ebiten/v2 v2.8.8
 
 require (
-	github.com/SimNine/go-solitaire v0.0.0-20250823194004-8d0a29001cd6 // indirect
+	github.com/SimNine/go-urfutils v0.0.0-20250829191031-5178ba3fcc53 // indirect
 	github.com/ebitengine/gomobile v0.0.0-20240911145611-4856209ac325 // indirect
 	github.com/ebitengine/hideconsole v1.0.0 // indirect
 	github.com/ebitengine/purego v0.8.0 // indirect

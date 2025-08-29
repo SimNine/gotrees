@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"math/rand"
 
-	"github.com/SimNine/go-solitaire/src/util"
+	urfutils "github.com/SimNine/go-urfutils/src"
 	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -14,7 +14,7 @@ var whiteSubImage *ebiten.Image
 
 func NewGeneTree(
 	random *rand.Rand,
-	pos util.Pos[int],
+	pos urfutils.Pos[int],
 ) *GeneTree {
 	tree := &GeneTree{
 		fitness:   0,
@@ -41,8 +41,8 @@ type GeneTree struct {
 
 	// Cached data; should be invalidated on any change
 	debugImage  *ebiten.Image
-	topLeft     util.Pos[int]
-	bottomRight util.Pos[int]
+	topLeft     urfutils.Pos[int]
+	bottomRight urfutils.Pos[int]
 
 	fitness           int
 	nutrients         int     // fitness component from soil
@@ -59,7 +59,7 @@ func (t *GeneTree) Draw(
 ) {
 	if t.debugImage == nil {
 		t.debugImage = localutil.CreateHollowRectangleImage(
-			util.Dims{
+			urfutils.Dims{
 				X: t.bottomRight.X - t.topLeft.X,
 				Y: t.bottomRight.Y - t.topLeft.Y,
 			},
@@ -80,7 +80,7 @@ func (t *GeneTree) Draw(
 	t.root.Draw(screen, viewport)
 }
 
-func (t *GeneTree) IsPointInBounds(pos util.Pos[int]) bool {
+func (t *GeneTree) IsPointInBounds(pos urfutils.Pos[int]) bool {
 	// TODO
 	return false
 }
