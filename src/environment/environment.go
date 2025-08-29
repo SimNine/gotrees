@@ -151,7 +151,6 @@ func (e *Environment) collideSunWithGround(particles map[*ParticleSun]struct{}) 
 	remParticles := []*ParticleSun{}
 	for p := range particles {
 		if (*p).collidesWithGround(e.landscape) {
-			(*p).consume()
 			remParticles = append(remParticles, p)
 		}
 	}
@@ -164,7 +163,6 @@ func (e *Environment) collideRainWithGround(particles map[*ParticleRain]struct{}
 	remParticles := []*ParticleRain{}
 	for p := range particles {
 		if p.collidesWithGround(e.landscape) {
-			p.consume()
 			remParticles = append(remParticles, p)
 		}
 	}
@@ -177,8 +175,8 @@ func (e *Environment) collideSunWithTrees(particles map[*ParticleSun]struct{}) {
 	remParticles := []*ParticleSun{}
 	for p := range particles {
 		for tree := range e.trees {
-			if tree.DoesPointCollide(p.pos) {
-				p.consume()
+			collides, nodeType := tree.DoesPointCollide(p.pos)
+			if collides && nodeType == genetree.TREENODE_LEAF {
 				remParticles = append(remParticles, p)
 				break
 			}
@@ -193,8 +191,8 @@ func (e *Environment) collideRainWithTrees(particles map[*ParticleRain]struct{})
 	remParticles := []*ParticleRain{}
 	for p := range particles {
 		for tree := range e.trees {
-			if tree.DoesPointCollide(p.pos) {
-				p.consume()
+			collides, nodeType := tree.DoesPointCollide(p.pos)
+			if collides && nodeType == genetree.TREENODE_RAINCATCHER {
 				remParticles = append(remParticles, p)
 				break
 			}

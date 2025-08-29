@@ -157,21 +157,22 @@ func (n *TreeNode) Draw(
 	}
 }
 
-func (n *TreeNode) DoesPointCollideRecursive(pos geom.Pos[int]) bool {
+func (n *TreeNode) DoesPointCollideRecursive(pos geom.Pos[int]) (bool, NodeType) {
 	xDiff := math.Abs(pos.ToFloatPos().X - n.pos.ToFloatPos().X)
 	yDiff := math.Abs(pos.ToFloatPos().Y - n.pos.ToFloatPos().Y)
 	collides := n.diameter >= math.Sqrt(math.Pow(xDiff, 2)+math.Pow(yDiff, 2))
 	if collides {
-		return true
+		return true, n.nodeType
 	}
 
 	for child := range n.children {
-		if child.DoesPointCollideRecursive(pos) {
-			return true
+		collides, childType := child.DoesPointCollideRecursive(pos)
+		if collides {
+			return true, childType
 		}
 	}
 
-	return false
+	return false, 0
 }
 
 func (n *TreeNode) mutate() {

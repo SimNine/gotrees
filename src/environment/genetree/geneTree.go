@@ -74,9 +74,9 @@ func (t *GeneTree) Draw(
 	t.root.Draw(screen, viewport)
 }
 
-func (t *GeneTree) DoesPointCollide(pos geom.Pos[int]) bool {
+func (t *GeneTree) DoesPointCollide(pos geom.Pos[int]) (bool, NodeType) {
 	if !t.IsPointInBounds(pos) {
-		return false
+		return false, 0
 	}
 
 	return t.root.DoesPointCollideRecursive(pos)

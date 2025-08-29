@@ -64,11 +64,6 @@ func (p *baseParticle) collidesWithGround(l *Landscape) bool {
 	return l.tileType[p.pos.X][p.pos.Y] == tileTypeGround
 }
 
-func (p *baseParticle) consume() {
-	p.isConsumed = true
-	p.color = color.RGBA{R: 0, G: 0, B: 0, A: 0}
-}
-
 //////////////////
 // ParticleRain
 //////////////////
