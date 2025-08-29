@@ -29,9 +29,7 @@ func NewGeneTree(
 	}
 
 	// Get the bounding box of the tree
-	topLeft, bottomRight := tree.root.getMaxSubtreeBounds()
-	tree.topLeft = topLeft
-	tree.bottomRight = bottomRight
+	tree.bounds = tree.root.getMaxSubtreeBounds()
 
 	return tree
 }
@@ -40,9 +38,8 @@ type GeneTree struct {
 	random *rand.Rand
 
 	// Cached data; should be invalidated on any change
-	debugImage  *ebiten.Image
-	topLeft     geom.Pos[int]
-	bottomRight geom.Pos[int]
+	debugImage *ebiten.Image
+	bounds     geom.Bounds[int]
 
 	fitness           int
 	nutrients         int     // fitness component from soil
@@ -59,10 +56,7 @@ func (t *GeneTree) Draw(
 ) {
 	if t.debugImage == nil {
 		t.debugImage = gfx.EbitenCreateHollowRectangleImage(
-			geom.Dims[int]{
-				X: t.bottomRight.X - t.topLeft.X,
-				Y: t.bottomRight.Y - t.topLeft.Y,
-			},
+			t.bounds.Dims,
 			color.RGBA{
 				R: 255,
 				G: 0,
@@ -73,7 +67,7 @@ func (t *GeneTree) Draw(
 	}
 	if viewport.Debug {
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(t.topLeft.X-viewport.Pos.X), float64(t.topLeft.Y-viewport.Pos.Y))
+		op.GeoM.Translate(float64(t.bounds.Pos.X-viewport.Pos.X), float64(t.bounds.Pos.Y-viewport.Pos.Y))
 		screen.DrawImage(t.debugImage, op)
 	}
 

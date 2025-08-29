@@ -251,25 +251,15 @@ func (n *TreeNode) initPosition(parentPos geom.Pos[int]) {
 	}
 }
 
-func (n *TreeNode) getMaxSubtreeBounds() (geom.Pos[int], geom.Pos[int]) {
-	dCeil := math.Ceil(n.diameter / 2.0)
-	topLeft := n.pos.Sub(geom.Pos[int]{X: int(dCeil), Y: int(dCeil)})
-	bottomRight := n.pos.Translate(int(dCeil), int(dCeil))
+func (n *TreeNode) getMaxSubtreeBounds() geom.Bounds[int] {
+	halfDiameter := int(math.Ceil(n.diameter / 2))
+	bounds := geom.MakeBoundsFromPosAndDims(
+		n.pos.Sub(geom.Pos[int]{X: halfDiameter, Y: halfDiameter}),
+		geom.Dims[int]{X: int(math.Ceil(n.diameter)), Y: int(math.Ceil(n.diameter))},
+	)
 	for child := range n.children {
-		childTopLeft, childBottomRight := child.getMaxSubtreeBounds()
-
-		if childTopLeft.X < topLeft.X {
-			topLeft.X = childTopLeft.X
-		}
-		if childTopLeft.Y < topLeft.Y {
-			topLeft.Y = childTopLeft.Y
-		}
-		if childBottomRight.X > bottomRight.X {
-			bottomRight.X = childBottomRight.X
-		}
-		if childBottomRight.Y > bottomRight.Y {
-			bottomRight.Y = childBottomRight.Y
-		}
+		childBounds := child.getMaxSubtreeBounds()
+		bounds = bounds.Union(childBounds)
 	}
-	return topLeft, bottomRight
+	return bounds
 }
