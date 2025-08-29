@@ -56,14 +56,6 @@ func (b *baseParticle) Draw(
 	// }
 }
 
-func (p *baseParticle) collidesWithGround(l *Landscape) bool {
-	if l == nil {
-		return false
-	}
-
-	return l.tileType[p.pos.X][p.pos.Y] == tileTypeGround
-}
-
 //////////////////
 // ParticleRain
 //////////////////

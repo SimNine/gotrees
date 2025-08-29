@@ -150,7 +150,7 @@ func (e *Environment) addNewRain() {
 func (e *Environment) collideSunWithGround(particles map[*ParticleSun]struct{}) {
 	remParticles := []*ParticleSun{}
 	for p := range particles {
-		if (*p).collidesWithGround(e.landscape) {
+		if e.landscape.tileType[p.pos.X][p.pos.Y] == tileTypeGround {
 			remParticles = append(remParticles, p)
 		}
 	}
@@ -162,7 +162,7 @@ func (e *Environment) collideSunWithGround(particles map[*ParticleSun]struct{}) 
 func (e *Environment) collideRainWithGround(particles map[*ParticleRain]struct{}) {
 	remParticles := []*ParticleRain{}
 	for p := range particles {
-		if p.collidesWithGround(e.landscape) {
+		if e.landscape.tileType[p.pos.X][p.pos.Y] == tileTypeGround {
 			remParticles = append(remParticles, p)
 		}
 	}
