@@ -31,9 +31,9 @@ func NewTreeNodeBase(
 		random,
 		map[*TreeNode]struct{}{},
 		TREENODE_STRUCT,
-		(random.Float64()*9.0)+NODE_MIN_DIAMETER,
+		(random.NormFloat64()*NODE_MIN_DIAMETER)+NODE_MIN_DIAMETER,
 		0,
-		-math.Pi/2,
+		random.NormFloat64()*2*math.Pi-(math.Pi/2),
 		pos,
 		true,
 	)
