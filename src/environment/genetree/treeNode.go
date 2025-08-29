@@ -259,8 +259,8 @@ func (n *TreeNode) initPosition(parentPos util.Pos[int]) {
 }
 
 func (n *TreeNode) getMaxSubtreeBounds() (util.Pos[int], util.Pos[int]) {
-	topLeft := n.pos
-	bottomRight := n.pos.Translate(int(n.diameter), int(n.diameter))
+	topLeft := n.pos.Sub(util.Pos[int]{X: int(n.diameter / 2), Y: int(n.diameter / 2)})
+	bottomRight := topLeft.Translate(int(n.diameter), int(n.diameter))
 	for child := range n.children {
 		childTopLeft, childBottomRight := child.getMaxSubtreeBounds()
 
