@@ -107,7 +107,7 @@ type Landscape struct {
 
 func (l *Landscape) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport,
+	viewport localutil.Viewport[int],
 ) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(-viewport.Pos.X), float64(-viewport.Pos.Y))

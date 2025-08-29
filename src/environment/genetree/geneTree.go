@@ -55,7 +55,7 @@ type GeneTree struct {
 
 func (t *GeneTree) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport,
+	viewport localutil.Viewport[int],
 ) {
 	if t.debugImage == nil {
 		t.debugImage = localutil.CreateHollowRectangleImage(

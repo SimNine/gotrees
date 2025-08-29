@@ -94,7 +94,7 @@ type TreeNode struct {
 
 func (n *TreeNode) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport,
+	viewport localutil.Viewport[int],
 ) {
 	centerPos := viewport.GameToScreen(n.pos)
 	topleftPos := centerPos.Sub(geom.Pos[int]{X: int(n.diameter / 2), Y: int(n.diameter / 2)})

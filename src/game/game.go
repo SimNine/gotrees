@@ -14,7 +14,7 @@ func NewGame(dims geom.Dims[int]) *Game {
 	return &Game{
 		windowSize:       dims,
 		windowRenderDims: dims,
-		viewport: localutil.Viewport{
+		viewport: localutil.Viewport[int]{
 			Pos:   geom.Pos[int]{X: 0, Y: 0},
 			Dims:  dims,
 			Debug: true,
@@ -30,7 +30,7 @@ func NewGame(dims geom.Dims[int]) *Game {
 type Game struct {
 	windowSize       geom.Dims[int]
 	windowRenderDims geom.Dims[int]
-	viewport         localutil.Viewport
+	viewport         localutil.Viewport[int]
 	cursorWindowPos  geom.Pos[int]
 	prevCursorPos    geom.Pos[int]
 	cursorPressed    bool

@@ -68,7 +68,7 @@ type Environment struct {
 
 func (e *Environment) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport,
+	viewport localutil.Viewport[int],
 ) {
 	// Fill the background with blue
 	screen.Fill(COLOR_SKYBLUE)

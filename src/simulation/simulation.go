@@ -28,7 +28,7 @@ type Simulation struct {
 
 func (s *Simulation) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport,
+	viewport localutil.Viewport[int],
 ) {
 	s.env.Draw(screen, viewport)
 }

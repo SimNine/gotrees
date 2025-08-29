@@ -46,7 +46,7 @@ type baseParticle struct {
 
 func (b *baseParticle) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport,
+	viewport localutil.Viewport[int],
 ) {
 	screenPos := viewport.GameToScreen(b.pos)
 	vector.DrawFilledCircle(screen, float32(screenPos.X), float32(screenPos.Y), 2, b.color, false)

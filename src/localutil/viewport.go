@@ -4,16 +4,16 @@ import (
 	"github.com/SimNine/go-urfutils/src/geom"
 )
 
-type Viewport struct {
-	Pos   geom.Pos[int]  // Top-left corner of the viewport in world coordinates
-	Dims  geom.Dims[int] // Dimensions of the viewport in pixels
+type Viewport[N geom.Number] struct {
+	Pos   geom.Pos[N]  // Top-left corner of the viewport in world coordinates
+	Dims  geom.Dims[N] // Dimensions of the viewport in pixels
 	Debug bool
 }
 
-func (v *Viewport) ScreenToGame(pos geom.Pos[int]) geom.Pos[int] {
+func (v *Viewport[N]) ScreenToGame(pos geom.Pos[N]) geom.Pos[N] {
 	return pos.TranslatePos(v.Pos)
 }
 
-func (v *Viewport) GameToScreen(pos geom.Pos[int]) geom.Pos[int] {
+func (v *Viewport[N]) GameToScreen(pos geom.Pos[N]) geom.Pos[N] {
 	return pos.Sub(v.Pos)
 }
