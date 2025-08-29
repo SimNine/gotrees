@@ -6,7 +6,7 @@ import (
 	"math/rand"
 
 	"github.com/SimNine/go-urfutils/src/geom"
-	"github.com/SimNine/gotrees/src/localutil"
+	"github.com/SimNine/go-urfutils/src/gfx"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -94,7 +94,7 @@ type TreeNode struct {
 
 func (n *TreeNode) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport[int],
+	viewport geom.Viewport[int],
 ) {
 	centerPos := viewport.GameToScreen(n.pos)
 	topleftPos := centerPos.Sub(geom.Pos[int]{X: int(n.diameter / 2), Y: int(n.diameter / 2)})
@@ -138,7 +138,7 @@ func (n *TreeNode) Draw(
 	// Draw the debug image if in debug mode
 	if viewport.Debug {
 		if n.debugImage == nil {
-			n.debugImage = localutil.CreateHollowRectangleImage(
+			n.debugImage = gfx.EbitenCreateHollowRectangleImage(
 				geom.Dims[int]{
 					X: int(math.Ceil(n.diameter)),
 					Y: int(math.Ceil(n.diameter)),

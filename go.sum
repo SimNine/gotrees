@@ -2,6 +2,8 @@ github.com/SimNine/go-urfutils v0.0.0-20250829191031-5178ba3fcc53 h1:2D/hNo8caqr
 github.com/SimNine/go-urfutils v0.0.0-20250829191031-5178ba3fcc53/go.mod h1:Jth00xbO0AiieLNpA67PGVObCUX41zgv0uOU5oNCgIs=
 github.com/SimNine/go-urfutils v0.0.0-20250829193329-cb4a8de4d69a h1:iaTDXWusNU0DXarZCs7yWijBt2Dpu8UycfLcmzxNlco=
 github.com/SimNine/go-urfutils v0.0.0-20250829193329-cb4a8de4d69a/go.mod h1:pLMmc8SLdeKRyuXKStZRrGzZA+0NXCZF4nKT/dVfy5E=
+github.com/SimNine/go-urfutils v0.0.0-20250829201539-d8d7367f10a2 h1:e6ruQJJtlu7psNMhIYze4juszhEUX1VS5iXjVgb0B2Q=
+github.com/SimNine/go-urfutils v0.0.0-20250829201539-d8d7367f10a2/go.mod h1:pLMmc8SLdeKRyuXKStZRrGzZA+0NXCZF4nKT/dVfy5E=
 github.com/ebitengine/gomobile v0.0.0-20240911145611-4856209ac325 h1:Gk1XUEttOk0/hb6Tq3WkmutWa0ZLhNn/6fc6XZpM7tM=
 github.com/ebitengine/gomobile v0.0.0-20240911145611-4856209ac325/go.mod h1:ulhSQcbPioQrallSuIzF8l1NKQoD7xmMZc5NxzibUMY=
 github.com/ebitengine/gomobile v0.0.0-20250329061421-6d0a8e981e4c h1:Ccgks2VROTr6bIm1FFxG2jT6P1DaCBMj8g/O9xbOQ08=

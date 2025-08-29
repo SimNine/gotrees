@@ -5,7 +5,6 @@ import (
 
 	"github.com/SimNine/go-urfutils/src/geom"
 	"github.com/SimNine/gotrees/src/environment"
-	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -28,7 +27,7 @@ type Simulation struct {
 
 func (s *Simulation) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport[int],
+	viewport geom.Viewport[int],
 ) {
 	s.env.Draw(screen, viewport)
 }

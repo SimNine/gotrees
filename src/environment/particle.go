@@ -5,7 +5,6 @@ import (
 
 	"github.com/SimNine/go-urfutils/src/geom"
 	"github.com/SimNine/gotrees/src/environment/genetree"
-	"github.com/SimNine/gotrees/src/localutil"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -46,7 +45,7 @@ type baseParticle struct {
 
 func (b *baseParticle) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport[int],
+	viewport geom.Viewport[int],
 ) {
 	screenPos := viewport.GameToScreen(b.pos)
 	vector.DrawFilledCircle(screen, float32(screenPos.X), float32(screenPos.Y), 2, b.color, false)

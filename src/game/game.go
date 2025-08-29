@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/SimNine/go-urfutils/src/geom"
-	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/SimNine/gotrees/src/simulation"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -14,9 +13,11 @@ func NewGame(dims geom.Dims[int]) *Game {
 	return &Game{
 		windowSize:       dims,
 		windowRenderDims: dims,
-		viewport: localutil.Viewport[int]{
-			Pos:   geom.Pos[int]{X: 0, Y: 0},
-			Dims:  dims,
+		viewport: geom.Viewport[int]{
+			Bounds: geom.MakeBoundsFromPosAndDims(
+				geom.Pos[int]{X: 0, Y: 0},
+				dims,
+			),
 			Debug: true,
 		},
 		cursorWindowPos: geom.Pos[int]{X: 0, Y: 0},
@@ -30,7 +31,7 @@ func NewGame(dims geom.Dims[int]) *Game {
 type Game struct {
 	windowSize       geom.Dims[int]
 	windowRenderDims geom.Dims[int]
-	viewport         localutil.Viewport[int]
+	viewport         geom.Viewport[int]
 	cursorWindowPos  geom.Pos[int]
 	prevCursorPos    geom.Pos[int]
 	cursorPressed    bool

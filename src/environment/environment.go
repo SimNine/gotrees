@@ -7,7 +7,6 @@ import (
 
 	"github.com/SimNine/go-urfutils/src/geom"
 	"github.com/SimNine/gotrees/src/environment/genetree"
-	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -68,7 +67,7 @@ type Environment struct {
 
 func (e *Environment) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport[int],
+	viewport geom.Viewport[int],
 ) {
 	// Fill the background with blue
 	screen.Fill(COLOR_SKYBLUE)

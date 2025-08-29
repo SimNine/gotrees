@@ -5,7 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/SimNine/go-urfutils/src/geom"
-	"github.com/SimNine/gotrees/src/localutil"
+	"github.com/SimNine/go-urfutils/src/gfx"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -55,10 +55,10 @@ type GeneTree struct {
 
 func (t *GeneTree) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport[int],
+	viewport geom.Viewport[int],
 ) {
 	if t.debugImage == nil {
-		t.debugImage = localutil.CreateHollowRectangleImage(
+		t.debugImage = gfx.EbitenCreateHollowRectangleImage(
 			geom.Dims[int]{
 				X: t.bottomRight.X - t.topLeft.X,
 				Y: t.bottomRight.Y - t.topLeft.Y,

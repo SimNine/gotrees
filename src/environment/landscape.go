@@ -7,7 +7,6 @@ import (
 	"math/rand"
 
 	"github.com/SimNine/go-urfutils/src/geom"
-	"github.com/SimNine/gotrees/src/localutil"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -107,7 +106,7 @@ type Landscape struct {
 
 func (l *Landscape) Draw(
 	screen *ebiten.Image,
-	viewport localutil.Viewport[int],
+	viewport geom.Viewport[int],
 ) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(-viewport.Pos.X), float64(-viewport.Pos.Y))

@@ -3,7 +3,7 @@ module github.com/SimNine/gotrees
 go 1.24.6
 
 require (
-	github.com/SimNine/go-urfutils v0.0.0-20250829193329-cb4a8de4d69a
+	github.com/SimNine/go-urfutils v0.0.0-20250829201539-d8d7367f10a2
 	github.com/hajimehoshi/ebiten/v2 v2.8.8
 )
 
