@@ -92,6 +92,35 @@ type TreeNode struct {
 	activated bool // whether this node has been used, or is vestigial
 }
 
+func (n *TreeNode) Clone(
+	destPos geom.Pos[int],
+	withChildren bool,
+	mutate bool,
+) *TreeNode {
+	posDelta := destPos.Sub(n.pos)
+	newChildren := map[*TreeNode]struct{}{}
+	if withChildren {
+		for child := range n.children {
+			newChildren[child.Clone(
+				child.pos.TranslatePos(posDelta),
+				true,
+				false,
+			)] = struct{}{}
+		}
+	}
+	clone := NewTreeNode(
+		n.random,
+		newChildren,
+		n.nodeType,
+		n.diameter,
+		n.dist,
+		n.angleRads,
+		destPos,
+		mutate,
+	)
+	return clone
+}
+
 func (n *TreeNode) Draw(
 	screen *ebiten.Image,
 	viewport geom.Viewport[int],

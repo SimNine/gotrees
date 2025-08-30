@@ -44,7 +44,6 @@ func (s *Simulation) Draw(
 	ebitenutil.DebugPrintAt(screen, "TPS: "+strconv.FormatFloat(ebiten.ActualTPS(), 'f', 3, 64), 10, printRoot+15)
 	ebitenutil.DebugPrintAt(screen, "Generation: "+strconv.Itoa(s.generationNum), 10, printRoot+30)
 	ebitenutil.DebugPrintAt(screen, "Num trees: "+strconv.Itoa(s.env.NumTrees()), 10, printRoot+45)
-
 }
 
 func (s *Simulation) Update() {

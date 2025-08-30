@@ -10,6 +10,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+var SPONTANEOUS_TREES_PER_GENERATION = 100
+
 var COLOR_SKYBLUE = color.RGBA{
 	R: 100,
 	G: 181,
@@ -40,14 +42,7 @@ func NewEnvironment(
 	}
 
 	// Add some trees
-	for i := 0; i < 50; i++ {
-		xPos := random.Intn(dims.X)
-		yPos := env.landscape.groundLevels[xPos]
-		env.trees[genetree.NewGeneTree(
-			random,
-			geom.Pos[int]{X: xPos, Y: yPos},
-		)] = struct{}{}
-	}
+	env.addNewTrees(SPONTANEOUS_TREES_PER_GENERATION)
 
 	return env
 }
@@ -131,7 +126,7 @@ func (e *Environment) AdvanceGeneration() {
 	})
 	treesList = treesList[:len(treesList)/2]
 
-	// Reset all remaining trees
+	// Reset all trees
 	for _, tree := range treesList {
 		tree.Reset()
 	}
@@ -141,10 +136,45 @@ func (e *Environment) AdvanceGeneration() {
 	for _, tree := range treesList {
 		e.trees[tree] = struct{}{}
 	}
+
+	// For each remaining tree, add a mutated copy of it
+	for _, tree := range treesList {
+		newXPos := tree.GetRootPos().X + e.random.Intn(200) - 200
+		if newXPos < 0 || newXPos >= e.dims.X {
+			continue
+		}
+		newPos := geom.Pos[int]{
+			X: newXPos,
+			Y: e.landscape.groundLevels[newXPos],
+		}
+		newTree := tree.Clone(
+			newPos,
+			true,
+		)
+		e.trees[newTree] = struct{}{}
+	}
+
+	// Add some new random trees
+	// e.addNewTrees(SPONTANEOUS_TREES_PER_GENERATION)
 }
 
 func (e *Environment) NumTrees() int {
 	return len(e.trees)
+}
+
+func (e *Environment) addNewTrees(num int) {
+	for i := 0; i < num; i++ {
+		xPos := e.random.Intn(e.dims.X)
+		yPos := e.landscape.groundLevels[xPos]
+		e.addNewTree(geom.Pos[int]{X: xPos, Y: yPos})
+	}
+}
+
+func (e *Environment) addNewTree(pos geom.Pos[int]) {
+	e.trees[genetree.NewGeneTree(
+		e.random,
+		pos,
+	)] = struct{}{}
 }
 
 func (e *Environment) addNewSun() {

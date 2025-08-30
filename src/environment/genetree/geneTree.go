@@ -16,16 +16,32 @@ func NewGeneTree(
 	random *rand.Rand,
 	pos geom.Pos[int],
 ) *GeneTree {
-	tree := &GeneTree{
-		Fitness:   0,
-		Nutrients: 0,
-		Energy:    0,
-
-		root: *NewTreeNodeBase(
+	return NewGeneTreeFromRootNode(
+		random,
+		NewTreeNodeBase(
 			random,
 			pos,
 		),
-		age: 0,
+	)
+}
+
+func NewGeneTreeFromRootNode(
+	random *rand.Rand,
+	root *TreeNode,
+) *GeneTree {
+	tree := &GeneTree{
+		random: random,
+
+		debugImage: nil,
+		bounds:     geom.Bounds[int]{},
+
+		Fitness:           0,
+		Nutrients:         0,
+		Energy:            0,
+		fitnessPercentile: 0.0,
+
+		root: root,
+		age:  0,
 	}
 
 	// Get the bounding box of the tree
@@ -46,8 +62,22 @@ type GeneTree struct {
 	Energy            int     // fitness component from sunlight
 	fitnessPercentile float32 // fitness as a percentile
 
-	root TreeNode
+	root *TreeNode
 	age  int
+}
+
+func (t *GeneTree) Clone(
+	destPos geom.Pos[int],
+	mutate bool,
+) *GeneTree {
+	return NewGeneTreeFromRootNode(
+		t.random,
+		t.root.Clone(
+			destPos,
+			true,
+			mutate,
+		),
+	)
 }
 
 func (t *GeneTree) Draw(
@@ -91,4 +121,8 @@ func (t *GeneTree) Reset() {
 	t.Nutrients = 0
 	t.Energy = 0
 	t.fitnessPercentile = 0.0
+}
+
+func (t *GeneTree) GetRootPos() geom.Pos[int] {
+	return t.root.pos
 }
