@@ -13,9 +13,10 @@ var MINIMUM_NUM_TREES = 100
 var FITNESS_ROOT_NUTRIENT_COLLECTION_PER_SIZE = 3.0
 var FITNESS_ROOT_NUTRIENT_COLLECTION_PER_DEPTH = 0.03
 var FITNESS_STRUCT_DECAY_PER_SIZE = 1.0
-var FITNESS_ACTIVE_NODE_DECAY_PER_SIZE = 2.0
+var FITNESS_ACTIVE_NODE_DECAY_PER_SIZE = 1.0
 var FITNESS_INACTIVE_NODE_DECAY_PER_SIZE = 10.0
 var FITNESS_REQUIREMENT_PER_CHILD_PER_NODE = 5000.0
+var BASE_MUTATION_CHANCE = 0.35
 
 var COLOR_SKYBLUE = color.RGBA{
 	R: 100,
@@ -130,7 +131,7 @@ func (e *Environment) Update() {
 				// } else if node.Activated {
 				// 	tree.Fitness -= node.Diameter * FITNESS_ACTIVE_NODE_DECAY_PER_SIZE
 			} else {
-				tree.Fitness -= node.Diameter * FITNESS_INACTIVE_NODE_DECAY_PER_SIZE
+				tree.Fitness -= node.Diameter * FITNESS_ACTIVE_NODE_DECAY_PER_SIZE
 			}
 		}
 	}
@@ -160,9 +161,10 @@ func (e *Environment) AdvanceGeneration() {
 					X: newXPos,
 					Y: e.landscape.groundLevels[newXPos],
 				}
+				mutate := e.random.Float64() < BASE_MUTATION_CHANCE
 				newTree := tree.Clone(
 					newPos,
-					true,
+					mutate,
 				)
 				nextGenTrees[newTree] = struct{}{}
 			}
@@ -183,8 +185,8 @@ func (e *Environment) AdvanceGeneration() {
 	}
 }
 
-func (e *Environment) NumTrees() int {
-	return len(e.trees)
+func (e *Environment) GetTrees() map[*genetree.GeneTree]struct{} {
+	return e.trees
 }
 
 func (e *Environment) addNewTrees(num int) {

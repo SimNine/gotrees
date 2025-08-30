@@ -23,7 +23,7 @@ func NewGame(dims geom.Dims[int]) *Game {
 		cursorWindowPos: geom.Pos[int]{X: 0, Y: 0},
 		cursorPressed:   false,
 		simulation: simulation.NewSimulation(
-			geom.Dims[int]{X: 4000, Y: 2000},
+			geom.Dims[int]{X: 3000, Y: 2000},
 		),
 	}
 }
@@ -75,6 +75,11 @@ func (g *Game) Update() error {
 	// Toggle debug mode
 	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
 		g.viewport.Debug = !g.viewport.Debug
+	}
+
+	// Toggle pause
+	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+		g.simulation.Paused = !g.simulation.Paused
 	}
 
 	// Move the viewport if the cursor was dragged

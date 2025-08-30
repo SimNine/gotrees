@@ -17,7 +17,7 @@ const NODE_MIN_DISTANCE = 40.0
 const NODE_MUTATE_CHANCE_TYPE = 0.15
 const NODE_MUTATE_CHANCE_DIAMETER = 0.30
 const NODE_MUTATE_CHANCE_DELETE_NODE = 0.10
-const NODE_MUTATE_CHANCE_ADD_NODE = 0.30
+const NODE_MUTATE_CHANCE_ADD_NODE = 0.25
 const NODE_MUTATE_CHANCE_ANGLE = 0.25
 const NODE_MUTATE_CHANCE_DISTANCE = 0.15
 
@@ -30,9 +30,9 @@ func NewTreeNodeBase(
 	treeNode := NewTreeNode(
 		random,
 		map[*TreeNode]struct{}{},
-		TREENODE_STRUCT,
+		NodeType(random.Intn(len(NODE_COLORS))),
 		(random.NormFloat64()*NODE_MIN_DIAMETER)+NODE_MIN_DIAMETER,
-		0,
+		(random.NormFloat64()*NODE_MIN_DISTANCE)+NODE_MIN_DISTANCE,
 		random.NormFloat64()*2*math.Pi-(math.Pi/2),
 		pos,
 		true,
@@ -224,7 +224,7 @@ func (n *TreeNode) mutate() {
 
 		// Additional chance to re-roll if not a struct
 		for newType != TREENODE_STRUCT {
-			if n.random.Float32() > 0.4 {
+			if n.random.Float32() < 0.4 {
 				break
 			}
 			newType = NodeType(n.random.Intn(len(NODE_COLORS)))
