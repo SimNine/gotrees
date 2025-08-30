@@ -9,8 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var whiteImage *ebiten.Image
-var whiteSubImage *ebiten.Image
+var FITNESS_GAIN_PER_POWER_AND_NUTRIENT = 2.0
 
 func NewGeneTree(
 	random *rand.Rand,
@@ -50,22 +49,6 @@ func NewGeneTreeFromRootNode(
 	return tree
 }
 
-type GeneTree struct {
-	random *rand.Rand
-
-	// Cached data; should be invalidated on any change
-	debugImage *ebiten.Image
-	bounds     geom.Bounds[int]
-
-	Fitness           int
-	Nutrients         int     // fitness component from soil
-	Energy            int     // fitness component from sunlight
-	fitnessPercentile float32 // fitness as a percentile
-
-	root *TreeNode
-	age  int
-}
-
 func (t *GeneTree) Clone(
 	destPos geom.Pos[int],
 	mutate bool,
@@ -78,6 +61,22 @@ func (t *GeneTree) Clone(
 			mutate,
 		),
 	)
+}
+
+type GeneTree struct {
+	random *rand.Rand
+
+	// Cached data; should be invalidated on any change
+	debugImage *ebiten.Image
+	bounds     geom.Bounds[int]
+
+	Fitness           float64 // overall fitness score
+	Nutrients         float64 // fitness component from soil
+	Energy            float64 // fitness component from sunlight
+	fitnessPercentile float32 // fitness as a percentile
+
+	root *TreeNode
+	age  int
 }
 
 func (t *GeneTree) Draw(
@@ -104,6 +103,15 @@ func (t *GeneTree) Draw(
 	t.root.Draw(screen, viewport)
 }
 
+func (t *GeneTree) Update() {
+	newFitness := min(t.Energy, t.Nutrients)
+	if newFitness > 0 {
+		t.Fitness += FITNESS_GAIN_PER_POWER_AND_NUTRIENT * newFitness
+		t.Energy -= newFitness
+		t.Nutrients -= newFitness
+	}
+}
+
 func (t *GeneTree) DoesPointCollide(pos geom.Pos[int]) (bool, NodeType) {
 	if !t.IsPointInBounds(pos) {
 		return false, 0
@@ -124,5 +132,9 @@ func (t *GeneTree) Reset() {
 }
 
 func (t *GeneTree) GetRootPos() geom.Pos[int] {
-	return t.root.pos
+	return t.root.Pos
+}
+
+func (t *GeneTree) GetAllNodes() map[*TreeNode]struct{} {
+	return t.root.GetAllNodes()
 }

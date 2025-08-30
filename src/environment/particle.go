@@ -27,7 +27,7 @@ type Particle interface {
 	consume()
 }
 
-func newParticle(pos geom.Pos[int], power int, color color.RGBA) baseParticle {
+func newParticle(pos geom.Pos[int], power float64, color color.RGBA) baseParticle {
 	return baseParticle{
 		pos:        pos,
 		power:      power,
@@ -38,7 +38,7 @@ func newParticle(pos geom.Pos[int], power int, color color.RGBA) baseParticle {
 
 type baseParticle struct {
 	pos        geom.Pos[int]
-	power      int
+	power      float64
 	isConsumed bool
 	color      color.RGBA
 }

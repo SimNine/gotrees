@@ -17,7 +17,7 @@ const NODE_MIN_DISTANCE = 40.0
 const NODE_MUTATE_CHANCE_TYPE = 0.15
 const NODE_MUTATE_CHANCE_DIAMETER = 0.30
 const NODE_MUTATE_CHANCE_DELETE_NODE = 0.10
-const NODE_MUTATE_CHANCE_ADD_NODE = 0.25
+const NODE_MUTATE_CHANCE_ADD_NODE = 0.30
 const NODE_MUTATE_CHANCE_ANGLE = 0.25
 const NODE_MUTATE_CHANCE_DISTANCE = 0.15
 
@@ -59,12 +59,12 @@ func NewTreeNode(
 	treeNode := &TreeNode{
 		random:    random,
 		children:  children,
-		nodeType:  nodeType,
-		diameter:  diameter,
+		NodeType:  nodeType,
+		Diameter:  diameter,
 		dist:      dist,
 		angleRads: angle,
-		pos:       pos,
-		activated: true,
+		Pos:       pos,
+		// Activated: true,
 	}
 
 	if mutate {
@@ -72,6 +72,35 @@ func NewTreeNode(
 	}
 
 	return treeNode
+}
+
+func (n *TreeNode) Clone(
+	destPos geom.Pos[int],
+	withChildren bool,
+	mutate bool,
+) *TreeNode {
+	posDelta := destPos.Sub(n.Pos)
+	newChildren := map[*TreeNode]struct{}{}
+	if withChildren {
+		for child := range n.children {
+			newChildren[child.Clone(
+				child.Pos.TranslatePos(posDelta),
+				true,
+				false,
+			)] = struct{}{}
+		}
+	}
+	clone := NewTreeNode(
+		n.random,
+		newChildren,
+		n.NodeType,
+		n.Diameter,
+		n.dist,
+		n.angleRads,
+		destPos,
+		mutate,
+	)
+	return clone
 }
 
 type TreeNode struct {
@@ -83,62 +112,33 @@ type TreeNode struct {
 
 	children map[*TreeNode]struct{}
 
-	nodeType  NodeType
-	diameter  float64       // diameter
+	NodeType  NodeType
+	Diameter  float64       // diameter
 	dist      float64       // distance from parent node
 	angleRads float64       // angle (clockwise) from directly below parent (in radians)
-	pos       geom.Pos[int] // position of the top-left corner
+	Pos       geom.Pos[int] // position of the top-left corner
 
-	activated bool // whether this node has been used, or is vestigial
-}
-
-func (n *TreeNode) Clone(
-	destPos geom.Pos[int],
-	withChildren bool,
-	mutate bool,
-) *TreeNode {
-	posDelta := destPos.Sub(n.pos)
-	newChildren := map[*TreeNode]struct{}{}
-	if withChildren {
-		for child := range n.children {
-			newChildren[child.Clone(
-				child.pos.TranslatePos(posDelta),
-				true,
-				false,
-			)] = struct{}{}
-		}
-	}
-	clone := NewTreeNode(
-		n.random,
-		newChildren,
-		n.nodeType,
-		n.diameter,
-		n.dist,
-		n.angleRads,
-		destPos,
-		mutate,
-	)
-	return clone
+	// Activated bool // whether this node has been used, or is vestigial
 }
 
 func (n *TreeNode) Draw(
 	screen *ebiten.Image,
 	viewport geom.Viewport[int],
 ) {
-	centerPos := viewport.GameToScreen(n.pos)
-	topleftPos := centerPos.Sub(geom.Pos[int]{X: int(n.diameter / 2), Y: int(n.diameter / 2)})
+	centerPos := viewport.GameToScreen(n.Pos)
+	topleftPos := centerPos.Sub(geom.Pos[int]{X: int(n.Diameter / 2), Y: int(n.Diameter / 2)})
 
 	// Draw a line from this node to each child
 	for child := range n.children {
 		startPos := centerPos
-		endPos := viewport.GameToScreen(geom.Pos[int]{X: child.pos.X, Y: child.pos.Y})
+		endPos := viewport.GameToScreen(geom.Pos[int]{X: child.Pos.X, Y: child.Pos.Y})
 		vector.StrokeLine(
 			screen,
 			float32(startPos.X),
 			float32(startPos.Y),
 			float32(endPos.X),
 			float32(endPos.Y),
-			float32(n.diameter/10),
+			float32(n.Diameter/10),
 			color.RGBA{R: 139, G: 69, B: 19, A: 255}, // brown
 			false,
 		)
@@ -146,7 +146,7 @@ func (n *TreeNode) Draw(
 
 	// Draw this node
 	if n.image == nil {
-		imgSize := int(math.Ceil(n.diameter))
+		imgSize := int(math.Ceil(n.Diameter))
 		if imgSize < 1 {
 			imgSize = 1
 		}
@@ -155,8 +155,8 @@ func (n *TreeNode) Draw(
 			n.image,
 			float32(imgSize)/2,
 			float32(imgSize)/2,
-			float32(n.diameter)/2,
-			NODE_COLORS[n.nodeType],
+			float32(n.Diameter)/2,
+			NODE_COLORS[n.NodeType],
 			false,
 		)
 	}
@@ -169,8 +169,8 @@ func (n *TreeNode) Draw(
 		if n.debugImage == nil {
 			n.debugImage = gfx.EbitenCreateHollowRectangleImage(
 				geom.Dims[int]{
-					X: int(math.Ceil(n.diameter)),
-					Y: int(math.Ceil(n.diameter)),
+					X: int(math.Ceil(n.Diameter)),
+					Y: int(math.Ceil(n.Diameter)),
 				},
 				color.RGBA{R: 255, G: 255, B: 0, A: 255},
 			)
@@ -187,11 +187,11 @@ func (n *TreeNode) Draw(
 }
 
 func (n *TreeNode) DoesPointCollideRecursive(pos geom.Pos[int]) (bool, NodeType) {
-	xDiff := math.Abs(pos.ToFloatPos().X - n.pos.ToFloatPos().X)
-	yDiff := math.Abs(pos.ToFloatPos().Y - n.pos.ToFloatPos().Y)
-	collides := n.diameter >= math.Sqrt(math.Pow(xDiff, 2)+math.Pow(yDiff, 2))
+	xDiff := math.Abs(pos.ToFloatPos().X - n.Pos.ToFloatPos().X)
+	yDiff := math.Abs(pos.ToFloatPos().Y - n.Pos.ToFloatPos().Y)
+	collides := n.Diameter >= math.Sqrt(math.Pow(xDiff, 2)+math.Pow(yDiff, 2))
 	if collides {
-		return true, n.nodeType
+		return true, n.NodeType
 	}
 
 	for child := range n.children {
@@ -202,6 +202,19 @@ func (n *TreeNode) DoesPointCollideRecursive(pos geom.Pos[int]) (bool, NodeType)
 	}
 
 	return false, 0
+}
+
+func (n *TreeNode) GetAllNodes() map[*TreeNode]struct{} {
+	allNodes := map[*TreeNode]struct{}{
+		n: {},
+	}
+	for child := range n.children {
+		childNodes := child.GetAllNodes()
+		for cn := range childNodes {
+			allNodes[cn] = struct{}{}
+		}
+	}
+	return allNodes
 }
 
 func (n *TreeNode) mutate() {
@@ -223,16 +236,16 @@ func (n *TreeNode) mutate() {
 		}
 
 		// Set the new type
-		n.nodeType = newType
+		n.NodeType = newType
 	}
 
 	// Chance of mutating this node's diameter
 	if n.random.Float32() < NODE_MUTATE_CHANCE_DIAMETER {
 		diameterChange := n.random.Float64()*16.0 - 8.0
-		n.diameter += diameterChange
+		n.Diameter += diameterChange
 	}
-	if n.diameter < NODE_MIN_DIAMETER {
-		n.diameter = NODE_MIN_DIAMETER
+	if n.Diameter < NODE_MIN_DIAMETER {
+		n.Diameter = NODE_MIN_DIAMETER
 	}
 
 	// Chance to lose each child node, otherwise mutate them
@@ -253,11 +266,11 @@ func (n *TreeNode) mutate() {
 	}
 
 	// Chance to add child nodes if this is a struct
-	if n.nodeType == TREENODE_STRUCT {
+	if n.NodeType == TREENODE_STRUCT {
 		for {
 			if n.random.Float32() < NODE_MUTATE_CHANCE_ADD_NODE {
 				// Add a new child node
-				child := NewTreeNodeBase(n.random, geom.Pos[int]{X: n.pos.X, Y: n.pos.Y})
+				child := NewTreeNodeBase(n.random, geom.Pos[int]{X: n.Pos.X, Y: n.Pos.Y})
 				n.children[child] = struct{}{}
 				child.mutate()
 			} else {
@@ -284,20 +297,20 @@ func (n *TreeNode) mutate() {
 
 func (n *TreeNode) initPosition(parentPos geom.Pos[int]) {
 	// Calculate the position of this node based on its parent
-	n.pos.X = parentPos.X + int(n.dist*math.Cos(n.angleRads))
-	n.pos.Y = parentPos.Y + int(n.dist*math.Sin(n.angleRads))
+	n.Pos.X = parentPos.X + int(n.dist*math.Cos(n.angleRads))
+	n.Pos.Y = parentPos.Y + int(n.dist*math.Sin(n.angleRads))
 
 	// Adjust the position of all child nodes
 	for child := range n.children {
-		child.initPosition(n.pos)
+		child.initPosition(n.Pos)
 	}
 }
 
 func (n *TreeNode) getMaxSubtreeBounds() geom.Bounds[int] {
-	halfDiameter := int(math.Ceil(n.diameter / 2))
+	halfDiameter := int(math.Ceil(n.Diameter / 2))
 	bounds := geom.MakeBoundsFromPosAndDims(
-		n.pos.Sub(geom.Pos[int]{X: halfDiameter, Y: halfDiameter}),
-		geom.Dims[int]{X: int(math.Ceil(n.diameter)), Y: int(math.Ceil(n.diameter))},
+		n.Pos.Sub(geom.Pos[int]{X: halfDiameter, Y: halfDiameter}),
+		geom.Dims[int]{X: int(math.Ceil(n.Diameter)), Y: int(math.Ceil(n.Diameter))},
 	)
 	for child := range n.children {
 		childBounds := child.getMaxSubtreeBounds()
